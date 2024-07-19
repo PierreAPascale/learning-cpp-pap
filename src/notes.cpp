@@ -6,36 +6,6 @@ but you need it for a car retailer.
 NAMESPACES
 Splits in your code (regions) to separate otherwise identical names. If using a  library, you can use some of its functions by telling C++ to use a specific region. The scope resolution operator serves that purpose ::
 
-MODELS
-How objects are defined
-
-ENCAPSULATION
-
-Only include information about themselves.
-Don't include gas price in the car; the gas station would have it.
-
-CLASSES
-Classes contain two types of members: data + function
-Car.make, Car.paint
-Each instance = an object of the class (3 car objects)
-
-
-ACCESS
-Private : accessible only by itself, not even inherited classes
-Public : accessible by any other part of the code
-Protected : accessible by inherited classes
-
-INHERITANCE AND POLYMORPHISM
-Subclasses (class based on another) and superclasses (the class it inherits from)
-Poly = Function can be implemented differently in subclasses (inherited) vs superclass
-Such "sibling" classes are polymorphic.
-
-////
-
-SYNTAX
-Case-Sensitive
-Indents ignored by converters, but readability ++
-; at end of most lines, except library inclusions, } to end functions, ---- Does it mean "do this line of code"? Closing a function isn't taking an action...
 
 
 LIBRARIES
@@ -61,6 +31,15 @@ std::cout<<"String" << "as many consecutive strings as you need"
 String Standard Library
 #include <string>
 
+
+stdint.h header file from the C library  -> <cstdint>
+In C, not C++!
+However, some were popular, so made into C++. Name had a c added as prefix.
+uint32_t
+int16_t
+U = unsigned, int = integer, number = bit size, _t = type
+
+
     DECLARATIONS https://learn.microsoft.com/en-us/cpp/cpp/using-declaration?view=msvc-170
     Defining a word as a variable, function or other. 
     Declarations are always made at a specific scope (in a function, in a library, in a loop, etc.). That scope can be changed. Exiting a scope == variables deleted from memory.
@@ -81,6 +60,9 @@ Can use types defined in libraries -> std::string
 
 Can declare multiple at once using commas, initializing as needed:
     int a, b = 5;
+
+
+Values they can contain:
 
 Constant Literals:
 Integers = int, with an optional Radix (la base du nombre, base 8 base 12 base 16). default = Decimal, no radix specifier
@@ -121,9 +103,16 @@ typeid(varName).name()
     name is a member function of each type.
 i = int, l = long, f = float, d = double, b = bool, c = char, PKc (pointer to const char) = string
 
+Shorthands:
+Modifying variable, setting it    
+    varName = varName + 2
+    varName += 2
+
+
 DATA TYPES
 Representations encoded in bits that vary in length. 
 cppreference.com/basic concepts/types
+Primitive Types: basic category, without defined implementation (ex: int is primitive, vs uint32_t)
 Portable Types: types that can be ported to different systems, because they are always declared and compiled with the same properties (behavior and size).  sdtint.h (library) defines fixed-width integers using the ISO C99 standard: int8_t (signed 8bit int) , uint32_t (unsigned 32bit int)
 
 Fundamental/arithmetic/compound : https://en.cppreference.com/w/cpp/language/types
