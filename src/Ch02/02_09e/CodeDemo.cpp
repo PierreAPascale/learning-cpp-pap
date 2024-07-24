@@ -3,7 +3,7 @@
 // Strings, by Eduardo Corpeño 
 
 #include <iostream>
-#include <string>
+//#include <string>
 #include <cstring>
 
 int main(){

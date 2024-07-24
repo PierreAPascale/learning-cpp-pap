@@ -9,9 +9,21 @@ Splits in your code (regions) to separate otherwise identical names. If using a 
 
 
 LIBRARIES
+https://cplusplus.com/reference/iolibrary/
 Collections of objects and member functions to avoid rewriting them.
-Inclusions: #include <library> (or Header?? IOStream is one of the headers for the standard library) 
-No ; at end of line
+Inclusions: #include <library> (IOStream is one of the headers from the standard library) 
+Libraries contain header file(s) sharing a purpose.
+Example hierarchy:
+
+Standard Library
+    Input/Output library
+        <iomanip> (iomanip.h) header, for manipulators of inputs/outputs, not only streams.
+            get_time (function) gets characters from the input stream, interpreting as time and date
+        
+        <iostream> (iostream.h) header, specifically handling the "Streams". Abstractions called streams are specially designed to perform input and output operations on sequences of character, like files or strings. Can be used to print to screen and receive text from keyboard
+            cin (object) standard input strream
+
+
 
 Calling Functions from libraries is done by calling members of a library with OPERATOR - SCOPE RESOLUTION :: 
 Scope is where the function/variable is accessible in the code, so you're telling where to find the object (here, defined in library)
@@ -109,6 +121,8 @@ Modifying variable, setting it
     varName += 2
 
 
+
+
 DATA TYPES
 Representations encoded in bits that vary in length. 
 cppreference.com/basic concepts/types
@@ -149,8 +163,12 @@ Constant, Volatile:
 
     STRINGS
     Not native to C++
-    Arrays of characters, terminated with value 0
+    Arrays of characters (char type), terminated with value 0 (null character)
     std library has it as a Class: <string> header includes the class and functions to manipulate the Class/data.
+    <cstring> : header from the C library with functions to manipulate strings.
+
+    String class should be used instead of character arrays... but if code NEEDS to be compatible w/ C, then we can use character arrays and import the <cstring> library to get the functions to achieve the same results as the C++ <string> header offers for its string class.
+
 
     POINTERS
     Data type for memory addresses
@@ -159,8 +177,98 @@ Constant, Volatile:
     Nullptr = a pointer of type nullptr_t (distinct type that is neither pointer nor member type). Defined in header <cstddef>, std::nullptr_t
 
 
+TYPE CASTING
+    Specify how to interpret data. 
+    Ex: int & float are very different in their binary encoding.
+
+    Implicit Conversion
+        float VarName = 25.3; //type is defined as Float, but expression says Double (25.3f would be float). It is implicitly converted to a Float.
+        int VarName = floatExpression // converts from 25.3 float to 25 int 
+        uint32_t = int32_t expression // converts from unsigned to signed, copying binary value as-is but interpreting it differently (wrapping around to show the complement value; -7 converted to 4294967289. Most significant bit = 1, AKA huge number.
+
+
+    Explicit (Casting) Conversion: explicitly specifying the data type of an expression, so that the compiler interprets it as such.
+        Syntax: (desiredType) expression // Expression that evaluates to value you want to convert
+        uint32_t uint32_number= -7; // stores binary value as complement of -7, AKA 4294967289
+        (int32_t) uint32_number // this expression will result in the expected -7 if printed, unlike Implicit conversion. This is because it took the binary value but interpreted it differently, as an unsigned int.
+
+
+    Important: "Constant Expressions"
+    (5/9) // This expression doesn't make it to the code (which is then executed by the processor).
+    Why? Because it can be evaluated when compiled. 
+
+    From Copilot:
+        This can be compiled:
+        const int cn = 2;
+        std::array<int, cn> a2; // OK: cn is a constant expression
+
+        This can not, and would result in an error:
+        int n = 1;
+        std::array<int, n> a1; 
+
+        const, or constexpr keywords, both enforce the value cannot be changed at runtime.
+
+
 Struct
 Extern
+
+COLLECTIONS
+    ARRAYS
+    Collections of data, all of the same type (as opposed to structs?). Fixed Size.
+    Indexed from 0 to N-1 (N = capacity of array)
+    Contiguous in memory: next to each other, creating a sequential block of memory addresses
+    Declaration only:
+        varType arrayName[arrayCapacity];
+    Declaration and Initialization:
+        varType arrayName[] = {expression1, expression2, expression3};
+        CANNOT use auto.
+    Access (read/write)
+        arrayName[itemIndex]
+        arrayName[itemIndex] = expression;
+
+    ENUMERATIONS
+    List of identifiers (enumerators) that are integers.
+        In C, operate in global scope... aka naming conflicts
+        Limited type safety
+    In C++ 11, Enum Classes (scoped enums, strongly typed enums). Encapsulation == OOP!
+    Type Safety to prevent conversion between enum and int
+
+    Non-Scoped Enums example:
+
+    enum varName {data0, data1, data2};
+    int main(){
+        int a;
+        a = data1; //printing this will print 1, the corresponding enumerator of the enumeration)
+
+
+        int a;
+        int data1 = 5; //creating a local variable in scope of main.
+        a = data1; //printing this will print 5, the corresponding enumerator of the enumeration)
+    }
+    int c;
+    c = data1; //printing this will print 1, because the value 5 was only true as part of Main. Because a is a local variable in main, main would output it first. :: could be used to define the scope and get main's value... but still a problem. data0, data1, etc. are names which do not have a scope, as they're outside all functions. Reusing the name will cause an error: redefining the same names with potentially different values. What would the program output? This is compiled, not interpreted, so it doesn't simply take the last one.
+
+    Class Enums (scoped, strongly typed): <cstdint>?
+    enum class enumName{data0, data1, data2}; //because this is now a class, the values are in the scope of that class. 
+    int main(){
+        int a;
+        // a = enumName::data1 (writing it like this will be an error if data1 isn't an int; that's expected (strongly typed))
+        a = (int) enumName::data1 // casting as an integer
+
+        // the alternative, preferable:
+        enumName a;
+        a = enumName::data1 // this makes a variable of type enumName. No type mismatch. To print it, we would need to cast it as another value: (int)a. It will return 1, the enumerator.
+    }
+    
+
+CONSTANTS
+    macros or constant variables can achieve the same objective. Prefer const variables, as they have a scope.
+    #define MACRO_NAME = 4;
+    or
+    const size_t varName = 4; // this type of variable is specifically for array sizes. (size_type)
+
+
+
 
 FUNCTIONS
 outputType functionName(parameters)
