@@ -119,7 +119,7 @@ Constant, Volatile:
 
 
     POINTERS
-    Data type for memory addresses. System architecture (32bit, 64bit, 96bit) dictates maximum memory size of the pointer, ie. the full precision that data could ever be located at. Pointers will use X Bytes, depending on what they need to contain.
+        Data type for memory addresses. System architecture (32bit, 64bit, 96bit) dictates maximum memory size of the pointer, ie. the full precision that data could ever be located at. Pointers will use X Bytes, depending on what they need to contain.
     Memory Map:
     Location (address), Unit (content)
     1 address per byte.
@@ -128,6 +128,9 @@ Constant, Volatile:
     May act as references to variables.
     Pointers have a type: int&, float&, string&...
     Can be used to access multiple different variables sequentially.
+    
+    Can also be VOID or NULL to point to any function or object requiring these.
+
     Nullptr = a pointer of type nullptr_t (distinct type that is neither pointer nor member type). Defined in header <cstddef>, std::nullptr_t
 
         Symbols:
@@ -156,12 +159,43 @@ Constant, Volatile:
         DESTRUCTOR
             delete varName;
             This keyword calls the destructor function of a class and removes it from memory.
-    SMART POINTERS
+        SMART POINTERS
         To prevent "dangling pointers" and memory leaks.
 
-REFERENCES
-
+    REFERENCES
     type& name = memberToReference        
+    Simple rewiring of tokens
+        Not Pointers, nor objects, nor address (no array of ref bc no address)
+        Always initialized (guarantee of finding data)
+        1 Ref = Alias to a single object (at declaration)
+        Single level of indirection, ever.
+
+        USAGE OF REFERENCES:
+        Passing parameters by ref (instead of by value)
+            Allows modifying the argument variable directly within the function
+        Avoiding Copies. Function parameters are typically copied. If large object, you do not want to unnecessarily copy it. 
+        Optimizing ForLoops by avoiding copies each iteration.
+            A form of for loop uses variable to iterate through a container. This variable MAY require copy each iteration.
+
+    STL VECTORS (instead of ARRAYS)
+    Dynamic Size
+    Memory-managed (unless objects within vector are manually allocated)
+    Template - Generic container class (can implement for any type of element)
+        Member functions to manipulate them
+        Part of C++ STD library (generic programming style?)
+        Iterators can be used (container): vectorName.begin() // iterator to the first element. .end() last element+1. Can do (instance.end()-1)->memberFunctionName, or prev(iterator, positionsToMoveBack
+        Template<type>    
+    Consecutive in Memory: Can only add items from the back end (furthest)
+        Indexed beginning at 0 : instance[2] returns the third element.
+        
+    Vector Header:
+        std::vector<type> vectorName;
+        vectorName.push_back() // To insert elements.
+        vectorName[index] = value // To set elements.
+
+ITERATORS
+    Used to traverse containers.
+    Work like pointers (addresses); use the same Operators, such as ->
 
 TYPE CASTING
     Specify how to interpret data. 
