@@ -45,12 +45,48 @@ CODE TYPES SEEN BY THE COMPILER
     Declarations are always made at a specific scope (in a function, in a library, in a loop, etc.). That scope can be changed. Exiting a scope == variables deleted from memory.
         "using"
         To bring an identifier to another scope as if it was part of it. Can be used to make children function. Page above is super clear for calling function from class D, doing something, then calling the parent function.
+        ex: using B::g;
 
     DIRECTIVES https://learn.microsoft.com/en-us/cpp/cpp/namespaces-cpp?view=msvc-170#using_directives
         "using"
-        To bring an identifier (function, var, object...) into scope so it can be
+        To bring an identifier (function, var, object...) into scope. This means bringing that entire namespace into the global namespace.
         1. Assigned to a variable (for shorter code?)
+        Ex: using namespace std
 
+    TYPE ALIASES
+    Can set up an alias (another name) to refer to a type. Simplify complex type definitions, Shorten var type declarations
+        USING KEYWORD - 
+        Syntax: using identifier = type;
+           using fmtfl = std::ios_base::fmtflags;
+           using Score = unsigned long //unsigned long is an int of at least 32bits
+
+        TYPEDEF KEYWORD: Older Keyword for the same thing
+        typedef keyword(s) typeName;
+            EX: typedef unsigned long Score; //unsigned long is an int of at least 32bits
+
+
+
+        ALIASES & CREATING TYPES OF FUNCTION POINTERS
+            SYNTAX:
+                typedef returnType (*typeName)(argType,....)
+                using typeName = returnType (*)(argType,....)
+
+            (*) : Empty Identifier. As this is a type of a function, it doesn't need a name.
+            set<int, float (*) (int, float)> // A set has 2 parameters. The first is an int, the second is a function pointer.
+                Specifically, it's a function that'll return a float and itself takes an int and a float as its parameters.
+                
+        With Function Pointers:
+        Syntax: using alias = functionPointer
+            using CharacterCreator = struct GameCharacter* (*)(int) //Alias "CharacterCreator" will call a POINTER to a FUNCTION (which can itself be used as a function) that returns a POINTER to a STRUCTURE (Pointer is called "GameCharacter". *GameCharacter could be used to access the data of that character).
+                //CharacterCreator becomes the new 
+            using CharacterCreator = //Sets the new identifier
+                    struct GameCharacter* //Pointer to a struct. The pointer itself has the identifier GameCharacter.
+                        GameCharacter* (*)(int) //Function that returns a Pointer named GameCharacter
+
+        
+
+
+    
 TOKENS
 Smallest unit of any CPP program; they cannot be evaluated & simplified down.
     
@@ -66,3 +102,10 @@ Operators: +, =, >, <<
     Assignment?, Arithmetic, comparisons, logical operators
 Punctuators: <, >, ;, {, }, (, )
     Code structure
+
+
+
+
+INLINE ASSEMBLY
+    Writing assembly code within C/C++ code.
+    https://barrgroup.com/your-first-embedded-program#:~:text=Typically%2C%20this%20loop%20surrounds%20a,delay%20in%20an%20infinite%20loop.

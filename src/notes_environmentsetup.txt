@@ -1,4 +1,16 @@
 
+IDE 
+Integrated Development environment
+-Projects
+    - Sets C++ Standard
+    - Compiler path, how it compiles, what it compiles...
+
+HEAP
+
+
+
+STACK
+
 /*
 VS Code can give prompts for each installation, etc. automatically, in a step by step manner, like Idea editors, so that it wont be so long procedure for beginners.
 

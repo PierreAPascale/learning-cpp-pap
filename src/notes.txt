@@ -21,6 +21,10 @@ Each instance = an object of the class (can have 3 car objects)
             var2 = arg2;
         }
     Best practice: discernable names (_i for initializer variables)
+    DESTRUCTORS
+    Function to define how an object is destroyed.
+    Declaration: ~className();
+    Implementation: className::~className(){}
 
     ACCESS
     Of Members.
@@ -35,16 +39,27 @@ INHERITANCE AND POLYMORPHISM
 Subclasses (class based on another) and superclasses (the class it inherits from)
 Poly = Function can be implemented differently in subclasses (inherited) vs superclass
 "Children" and "Sibling" classes with these re-implementations are polymorphic.
+
 Can add on to a parent's implementation by calling it in the Child's polymorphic implementation.
+    See "using" Declarations (not directives)
+    By default, children classes don't have their parents' functions in their scope. Can still be called: the parent's scope is used.
+    With the "using" declaration, can define a polymorphic implementation at the scope of the child class, using the same identifier.
 
 SYNTAX
 Case-Sensitive
 Indents ignored by converters, but readability ++
 ; at end of most lines, specifically at the end of STATEMENTS.
+    STATEMENTS do not return values, they only do actions.
+    EXPRESSIONS return values from constants, variables and operators.
 Library inclusions are NOT statements. (Preprocessor Directive)
 Functions are NOT statements. It only links a sequence of statements (body of the function) to a name/arguments/etc.
 
-
+RESERVED IDENTIFIERS (KEYWORDS)
+int float double char bool if else switch case default for while do return void class struct public private protected virtual new delete const static namespace using try catch throw nullptr
+    AVOID
+    same words with difference Case (Class vs class)
+    Underscores at beginning of identifiers : compilers often use those.
+        Private member variables are often used this way (less risk of conflict??)
 
 
 NAMESPACES
@@ -63,14 +78,17 @@ Inclusions: #include <library> (IOStream is one of the headers from the standard
 Libraries contain header file(s) sharing a purpose.
 Example hierarchy:
 
-Standard Library
+Standard Library  cppreference.com
     Input/Output library
         <iomanip> (iomanip.h) header, for manipulators of inputs/outputs, not only streams.
             ::get_time (function) gets characters from the input stream, interpreting as time and date
         
         <iostream> (iostream.h) header, specifically handling the "Streams". Abstractions called streams are specially designed to perform input and output operations on sequences of character, like files or strings. Can be used to print to screen and receive text from keyboard
-            ::cin (object) standard input strream
-
+            ::cin (object) standard input stream. Often used with >> extraction operator. (Single word only)
+                Use function ____ instead for multiple words. 
+            ::cout (object) character ouput, standard output stream object (typically the Terminal)
+            ::flush Produces a line immediately with the contents of the out-stream object. Often used before a cin.
+            ::endl Newline character in the ouput. Produces a line immediately.
         <fstream> file stream (text files)
         Similar to cin object from iostream: the input is the text.
             ::ifstream - class of the INPUT file stream
@@ -88,6 +106,29 @@ Standard Library
                     Returns next std:string line in the str variable.
             ::ofstream - Class of the OUTPUT file stream
             ::ostream - Parent Class of output streams : cout, ofstream, etc. Can use it as argument(reference) to make a function that can output to any output stream.  std::cout can be passed as a parameter, or a file with ofstream...
+        <cstdio> C (language) standard Input output
+            printf("Hello World!\n")
+
+        <vector> Vector container class
+        <algorithm> Sorting, searching, manipulating data
+        <memory> Smart Pointers. ex: shared_ptr, unique_ptr
+
+        <locale> Localization features
+        <thread> Class + funcs to create and handle threads
+        <mutex> Mutual exclusion primitives for thread synchronization 
+            
+STD LIBRARY (STL) COMPONENTS
+    CONTAINERS
+    std:: vector, list, map
+    <vector>
+    Arrays with various properties (dynamic, key:value relation, ordered or not...)
+    
+    ALGORITHMS
+    <algorithm>
+    Sorting, searching, manipulating data.
+    ITERATORS
+    Objects used to traverse containers
+
 
 
 Calling Functions from libraries is done by calling members of a library with OPERATOR - SCOPE RESOLUTION :: 
@@ -156,6 +197,7 @@ Pointer: These have a single operand, nothing to the left of operator.
         Gives access to the variable it's pointing to. Ceases to be a pointer
     Prefix& : Address of variable at its right (
     -> Arrow : access to members of classes or structures from a pointer
+
 
 KEYWORDS
 return();

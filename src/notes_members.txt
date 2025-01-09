@@ -1,61 +1,90 @@
-COMMON DATA TYPE LIBRARIES
-    STRING STANDARD LIBRARY
-    #include <string>
-
-
-stdint.h header file from the C library, <cstdint>
-In C, not C++!
-However, some were popular, so made into C++. Name had a c added as prefix.
-uint32_t
-int16_t
-U = unsigned, int = integer, number = bit size, _t = type\
 
 VARIABLES
 Temporary data storage units. Must be declared prior to usage.
 Declaration can contain initialization.
-
-
-
 varType varName;
 Can use types defined in libraries, std::string (check "std" for token "string")
 
 Can declare multiple at once using commas, initializing as needed:
     int a, b = 5;
 
+    CONSTANT LITERALS
+    A value in your code that doesn't change.
+    Examples:
+    Numbers: 10, 3.14, 0, -5
+    Characters: 'a', 'Z', '!'
+    Strings: "Hello, world!", "This is a string"
+    Boolean values: true, false
 
-Values they can contain:
+        CONSTANTS : named values representing a fixed value (PI)
+        LITERAL : a fixed value (5)
 
-Constant Literals:
-Integers = int, with an optional Radix (la base du nombre, base 8 base 12 base 16). default = Decimal, no radix specifier
--5, 123, etc.
-    Leading 0 = Octal (base 8)
-    0x = Hexadecimal 0x10 (12)
+COMMON DATA TYPE LIBRARIES : STRING STANDARD LIBRARY
+    
+    #include <string>
+
+    INTEGERS
+    stdint.h header file from the C library.    
+    Made into C++. Name had a c added as prefix: <cstdint>
+    Size is implementation-dependent:
+        uint32_t
+        int16_t
+    U = unsigned, int = integer, number = bit size, _t = type\
+    Signed = positive & negative. 
+    long = larger, 64bit ints
+        If you subtract an unsigned int below 0, it'll use the complement representation in binary: 4294967296 (2^32), i.e. starting from the other end.
+
+    Integers = int, with an optional Radix (la base du nombre, base 8 base 12 base 16). default = Decimal, no radix specifier
+    -5, 123, etc.
+    Leading 0 = Octal (base 8) (ATTENTION)
+    0x = Hexadecimal 0x10 (16) <--- Often used for bits, as 4bits = 16 (2^4)
     0b = Binary (1001)
-    Trailing (suffix) U = Unsigned 23U
+    Trailing (suffix) U = Unsigned 23U   
 
-Floats:
-    Float literal = Trailing f = 23.05f
-    double: default = 25.4
-
-Chars:
-    integers (fitting in 8 bits), ASCII between single quotes = 'x'
+    CHARACTERS
+    char(8bits), 'h', '7', '\n' (single character), '\0'
+    Can be entered as small integers (fitting in 8 bits) or as ASCII between single quotes = 'x'
     Backslash = escape character 
     '\0' == Null character, delimiting the end of a string
     '\n' == new line character
 
-String Literals:
-    "string"
+
+
+    BOOLEAN
+    bool
+    true, false
+    Anything except 0 is true (implicit bool)
+
+
+
+    FLOAT
+        Float literal = Trailing f = 23.05f
+        double: default = 25.4
+        long double = 3.12130192435409L
+        At least 1 decimal, even if 0.0f
+
+        Implementation defines min/max of what they represent.
+        Follows standards like IEEE 754 https://en.wikipedia.org/wiki/Single-precision_floating-point_format
+        https://stackoverflow.com/questions/14221612/difference-between-long-double-and-double-in-c-and-c 
+
+    STRINGS
+        Requires <string> STL (Standard Template Library)
+        "string"
+
+VARIABLE MEMORY
 
 Variables are declared at a specific scope.
-Exiting the scope == variables deleted from memory.
-"Automatic variables" == managed by compiler, allocated in the "stack" segment of memory, which itself is temporary.
+    Global variables : managed statically  by compiler, held in memory until program is exited in the Data segment of memory.
+    Local variables : within a given scope, held in memory as long as program remains in that scope.
+        Exiting the scope == variables deleted from memory.
+        Scope can be determined by {} : functions, classes, etc.
+        "Automatic variables" == managed dynamically by compiler, allocated in the Stack segment of memory, which itself is temporary.
 
 Type Inference: must initialize at declaration, but compiler infers the type of the variable.
-Maybe needs a line for each var???
     auto a =1, b = "", c = 'c', d = 3.14f, e = 12345678901, f = 3.14, g = true
-    a = int32, e exceeds 32bits, so long int
-    d = float, f = double
-    g = boolean
+        a = int32, e exceeds 32bits, so long int
+        d = float, f = double
+        g = boolean
 
 Getting the Type:
 typeid(varName).name()
@@ -164,6 +193,15 @@ Constant, Volatile:
         SMART POINTERS
         To prevent "dangling pointers" and memory leaks.
 
+        FUNCTION POINTERS
+        returnType (*funcPtrIdentifier)(args[..]);
+        funcPtrIdentifier = &funcName; //& optional. Address of Function.
+        You can call a function through its address.
+
+
+        POINTERS TO ARRAYS 
+            int (*) 32 //Type "pointer to an array of 32 integers"
+
     REFERENCES
     type& name = memberToReference        
     Simple rewiring of tokens
@@ -179,7 +217,7 @@ Constant, Volatile:
         Optimizing ForLoops by avoiding copies each iteration.
             A form of for loop uses variable to iterate through a container. This variable MAY require copy each iteration.
 
-    STD (stl?) VECTORS (instead of ARRAYS)
+    STD (STL: standard template library) VECTORS (instead of ARRAYS)
     Dynamic Size
     Memory-managed (unless objects within vector are manually allocated)
     Template - Generic container class (can implement for any type of element)
@@ -299,24 +337,82 @@ CONSTANTS
         Because variables enforce a type, syntax and scope, instead of the preprocess, which is "out of the code".
 
 
-    QUALIFIERS
+    QUALIFIERS / SPECIFIER
         const size_t varName = 4; // this type of variable is specifically for array sizes. (means size_type)
 
     Enforces a compile behavior for an Object's member.
         const
-            Throws compile errors if member is changed + optimizes the member (immutability).
-            
+            Throws compile errors if X is changed + optimizes X (immutability).
+            Initialization =/= modifying.
+            "Read-only"
+
+            Can set const on FUNCTIONS, VARIABLES and ARGUMENTS
+                FUNC: void printMoney(float amount) const{printf(amount)} //Nothing in the function can be modified.
+                VAR: const int maxHealth = 100;
+                ARG: void displayScore(const std::string& playerName) //Guarantees function won't modify the player's name.
+
                 USE CASES
-                Preventing a getter function from modifying the object.
+                Ensuring that a (getter) function will not modify its arguments or other aspects of the object.
                 Everything in a const function must be const:
-                    Must make sure any variable within is Const (initialization =/= modifying)
+                    Must make sure any variable within is Const
                     Unless it's using a mutable member... see mutable below.
         volatile
             code is not optimized for these vars/structs/unions, by preventing caching in registers + removing seemingly redundant addresses (pointers?)
+            "Can change at any time even from an outside source" (won't nec. find code nearby that modifies it). 
+            Embedded Systems & Multithreaded programs
+            Variables: when working with hardware registers or memory-mapped I/O: 
+                EX: volatile int enemyStatus;
+                We do not want accesses (DEFINE THIS) to be optimized as that could prevent read/writes from happening.  
         mutable 
-            Forces member of a class (even a Const one) to be mutable (can be changed).
-            EX: This allows you to make some functions const while using mutable variables within.
+            Forces MEMBER of a class (even a Const object) to be mutable (changeable).
+                USE CASES:
+                Make some functions const while using mutable variables within.
+                Track internal data for an object, not affecting how other objects can interact with it.
+                EX:
+                public:
+                    void updateScore() const{ ++score;} //
+                private:
+                    mutable int score = 0;
 
+        inline
+            Functions: Instead of being called, the contents of the function is expanded within the (expression?) at compilation. "STAMP"
+                Code is therefore called multiple times if re-used, but removes all function-calling overhead (passing arguments, retrieving results)
+        
+        constexpr
+            VARIABLE or RESULT OF A FUNCTION (expressions) evaluated at compile time, instead of runtime. 
+            FUNC: Only does when given CONSTANT arguments.
+
+        static (Specifier)
+
+            LOCAL VARIABLES -> Extends lifetime to entire duration of program (Data segment of memory) instead of function execution (Stack segment).
+                Can be used to generate values based on the previous function call (generateUniqueID, below) without defining variable in the caller function (main, below).
+                    #include <iostream>
+                    void generateUniqueID(){
+                        static int id = 0; // Static local variable
+                        ++id;
+                        std::cout << "Generated ID: " << id << std::endl;
+                    }
+
+                    int main(){
+                        generateUniqueID(); // Output: Generated ID: 1
+                        generateUniqueID(); // Output: Generated ID: 2
+                        generateUniqueID(); // Output: Generated ID: 3
+                        return 0;
+                    }
+                    //id retains its value between calls to generateUniqueID, allowing it to produce unique IDs sequentially.
+            CLASS MEMBERS -> Member is shared across all instances.
+                Important: Available to code when no objects are defined, because global. Can call it with Scope::FuncName();
+                class Enemy{
+                public:
+                    static int enemyCount; // Static class member
+
+                    // This is the constructor, called every time a new Enemy object is instantiated.
+                    Enemy(){
+                        ++enemyCount; // Increase enemy count
+                    }
+                    //Any enemy can tell you how many enemies are left, without an enemy tracker.
+            FUNCTIONS -> Linkage becomes internal: can only be accessed within that file
+                Ex: Can create a function for use in 3 classes but is still inaccessible from outside of that file. Similar to "private" for encapsulating members, extending to non-class functions. No copy/paste into all 3 classes either!
 
 DECLARATIONS can be done anywhere in the code, not all at the beginning. Hurray for modernity.
 
@@ -345,20 +441,20 @@ Scoped: global (as few as possible), in a namespace (usually better alternative 
 Must have a prototype (Declaration) and Implementation.
     Outside of main, write a function prototype before Main (so it can be used) and an implementation after Main.
         This IS Sequential. Compiler does go through line by line. No magic. 
-        
+    
 Modular, Procedural blocks of code
 Return a value
 Receive arguments
     Arguments VS Parameters
-    Arguments  = vars or constants sent to the function when called
-    Parameters = the variables in functions that take values of their arguments
+    Arguments  = vars or constants sent to the function when called: add(3,5)
+    Parameters = the variables in functions that take values of their arguments: int add(int a, int b)
 Global or Members of a class (methods, in Java or Python)
 
 No keyword! Same as a variable, but with parameters:
 outputType functionName(parameters)
 
 Specific Functions:
-int main(){ 
+int main(commandlineArguments){ 
     functionBody
 };
 The main function can receive nothing, or STRINGS coming from command line (think command promt, functions with arguments after... dvars and such)
@@ -394,6 +490,9 @@ The main function can receive nothing, or STRINGS coming from command line (thin
         //No special naming for this, as refs are aliases to the original variables.
         funcName(a,b);
 
+VIRTUAL FUNCTIONS
+
+
 EXPRESSIONS
 Temporary data storage unit which you must declare before usage with a type + name and can be initialized in declaration (like variables) 
 Can contain variables, constants and operators, always producing a value
@@ -414,3 +513,6 @@ ORIENTATION
     char32_t: A 32-bit wide character type that can store Unicode encoded as UTF-32. 
     Wide character string manipulation functions
     C++ provides functions for manipulating wide character strings, such as wcslen, wcscmp, wcsncpy, and wcstok.
+    
+    Char fall under (and can be interpreted as) integers.
+        Strings -> Class, more practical than just using character arrays (still possible if you want)
