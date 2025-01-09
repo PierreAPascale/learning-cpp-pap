@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <string>
-
+//
 class Student{
 private:
     int id;
@@ -13,7 +13,7 @@ public:
     int get_id() const;
     std::string get_name() const;
 };
-
+//
 class Course{
 private:
     int id;
@@ -26,7 +26,7 @@ public:
     std::string get_name() const;
     int get_credits() const;
 };
-
+//
 class Grade{
 private:
     int student_id;
@@ -39,7 +39,7 @@ public:
     int get_course_id() const;
     char get_grade() const;
 };
-
+//
 class StudentRecords{
 private:
     std::vector<Student> students;

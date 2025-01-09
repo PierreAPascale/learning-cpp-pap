@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 class Student{
 private:
@@ -56,4 +57,5 @@ public:
     std::string get_student_name(int) const;
     unsigned char get_course_credits(int) const;
     float get_GPA(int) const;
+    void report_card(int) const;
 };

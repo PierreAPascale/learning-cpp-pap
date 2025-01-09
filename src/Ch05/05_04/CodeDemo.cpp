@@ -18,8 +18,6 @@ int main(){
     std::cin >> id;
 
     SR.report_card(id);
-    
-    std::cout << std::endl << std::endl;
     return (0);
 }
 

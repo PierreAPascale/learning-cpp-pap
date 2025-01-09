@@ -1,0 +1,76 @@
+
+/*
+VS Code can give prompts for each installation, etc. automatically, in a step by step manner, like Idea editors, so that it wont be so long procedure for beginners.
+
+Sequence of steps to do (most of the things are one time):
+
+  
+    one time:  
+        install a C/C++ complier, add to PATH environment variable  
+        install C/C++ plugin for visual studio code  
+        tell visual studio code where the compiler is and what is the short cut to build and run  
+           these are files under ".vscode" (see below)
+    every project:  
+        crate a project  
+        build project  
+        run project  
+Detailed:
+
+One time:
+
+
+Note: Point 'A' below can be skipped if you already have a compiler.
+
+A. Install a compiler (if you don't have one already)  
+    Example below, installs MinGW c++ compiler on Windows:  
+    Download from here: https://sourceforge.net/p/mingw-w64/mailman/message/36103143/  
+    1. For windows, I downloaded https://sourceforge.net/projects/mingw-w64/files/mingw-w64/mingw-w64-release/mingw-w64-v5.0.3.zip  
+    2. unzip mingw-w64-v5.0.3.zip  
+    3. rename unzipped folder to MinGW, Move it to C:\MinGW\  
+    4. verify that you have "C:\MinGW\bin\gcc.exe" director/file, otherwise make necessary change to folder  
+
+B. Add your compiler to PATH environment variable
+    1. Add "C:\MinGW\bin" to PATH > user environment variable  
+    2. verify gcc command works from cmd  
+        restart your cmd  
+        run below command in 'cmd'  
+            where gcc  
+            The output should be: C:\MinGW\bin\gcc.exe  
+
+C. Restart your visual studio code  
+    1. install C/C++ plugin, as below:  
+        From Menu  
+             View > Extension  
+        Search & Install below extension  
+            C/C++  
+
+Every project:
+
+Note: You can copy paste the .vscode folder every time
+
+
+A. Create a below "myproj" folder & files, like below in below structure:  
+    C:\myproj\myfile.cpp  
+    C:\myproj\.vscode\  
+    C:\myproj\.vscode\c_cpp_properties.json  
+    C:\myproj\.vscode\launch.json  
+    C:\myproj\.vscode\settings.json  
+    C:\myproj\.vscode\tasks.json  
+
+B. Download & overwrite the above ((5 files)), from below link
+
+https://github.com/manoharreddyporeddy/my-programming-language-notes/tree/master/vscode-c%2B%2B
+
+C. Restart your visual studio/vs code  
+
+D. Open project in vs code & run project:
+
+  Drag and drop "myproj" folder into visual studio code  
+  BUILD PROJECT:   press "Ctrl + Shift + B" to build your myfile.exe  
+  RUN PROJECT:     press "Ctrl + F5" to run your myfile.exe  
+
+Thats all, hope that helped.
+
+More info: https://code.visualstudio.com/docs/languages/cpp
+
+*/

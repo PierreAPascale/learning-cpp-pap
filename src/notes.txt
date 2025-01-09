@@ -1,0 +1,212 @@
+/*
+C++ 
+
+MODELS
+OOO -> based on "Models". You can define an object in many ways, choose what you need to: you don't need a car's number of seats if you're creating racecars
+but you need it for a car retailer.
+
+ENCAPSULATION
+
+Of Models; to only include information about themselves.
+Don't include gas price in the car model; the gas station model would have it.
+
+CLASSES
+Classes contain two types of members: data + function
+Car.make, Car.paint
+Each instance = an object of the class (can have 3 car objects)
+    CONSTRUCTORS
+    Function to define the class within a class definition:
+        className( arg1, arg2){
+            var1 = arg1;
+            var2 = arg2;
+        }
+    Best practice: discernable names (_i for initializer variables)
+
+    ACCESS
+    Of Members.
+    Private : accessible only by itself, not even by inherited classes
+    Public : accessible by any other part of the code
+    Protected : accessible by itself and inherited classes
+
+        GETTERS and SETTERS
+        To keep variables from being read and written by other objects directly, add validation, etc., access is restricted.
+        
+INHERITANCE AND POLYMORPHISM
+Subclasses (class based on another) and superclasses (the class it inherits from)
+Poly = Function can be implemented differently in subclasses (inherited) vs superclass
+"Children" and "Sibling" classes with these re-implementations are polymorphic.
+Can add on to a parent's implementation by calling it in the Child's polymorphic implementation.
+
+SYNTAX
+Case-Sensitive
+Indents ignored by converters, but readability ++
+; at end of most lines, specifically at the end of STATEMENTS.
+Library inclusions are NOT statements. (Preprocessor Directive)
+Functions are NOT statements. It only links a sequence of statements (body of the function) to a name/arguments/etc.
+
+
+
+
+NAMESPACES
+Splits in your code (regions) to separate otherwise identical names. If using a  library, you can use some of its functions by telling C++ to use a specific region. The scope resolution operator serves that purpose ::
+
+//Similar to Houdini's "Geometry" inputs - you have to tell the program where to find the model's members
+
+HEADER FILES
+IOStream is one! Contains different objects and functions.
+<string> header includes the class and functions to manipulate the Class/data
+
+LIBRARIES
+https://cplusplus.com/reference/iolibrary/
+Collections of objects and member functions to avoid rewriting them.
+Inclusions: #include <library> (IOStream is one of the headers from the standard library) 
+Libraries contain header file(s) sharing a purpose.
+Example hierarchy:
+
+Standard Library
+    Input/Output library
+        <iomanip> (iomanip.h) header, for manipulators of inputs/outputs, not only streams.
+            ::get_time (function) gets characters from the input stream, interpreting as time and date
+        
+        <iostream> (iostream.h) header, specifically handling the "Streams". Abstractions called streams are specially designed to perform input and output operations on sequences of character, like files or strings. Can be used to print to screen and receive text from keyboard
+            ::cin (object) standard input strream
+
+        <fstream> file stream (text files)
+        Similar to cin object from iostream: the input is the text.
+            ::ifstream - class of the INPUT file stream
+                fileVar.open(string path, relative from same directory)
+                fileVar.close()
+                    Closes document, emptying var as well
+                fileVar.eof()
+                    Iterator returning a line at a time until it reaches end of File. Can use while(!file.eof())
+                    Linked with getline to know if at eof.
+
+                fileVar.fail()
+                    Bool TRUE if file isnt' found.
+
+                getline(fileVar, str)
+                    Returns next std:string line in the str variable.
+            ::ofstream - Class of the OUTPUT file stream
+            ::ostream - Parent Class of output streams : cout, ofstream, etc. Can use it as argument(reference) to make a function that can output to any output stream.  std::cout can be passed as a parameter, or a file with ofstream...
+
+
+Calling Functions from libraries is done by calling members of a library with OPERATOR - SCOPE RESOLUTION :: 
+Scope is where the function/variable is accessible in the code, so you're telling where to find the object (here, defined in library)
+member::object
+(see Enum Classes - :: is used to access the single 'enumeration' object.)
+
+OPERATOR - MEMBER OF . (dot)
+To access a member of an object
+
+OPERATOR - MEMBER OF POINTER ->
+
+
+OPERATOR - LEFT BOUND INSERTION << Data can be inserted into Object (instance of class) to their left using this. 
+    Takes care of converting from int/float to string when inserting in ofstream (fstream) and cout (iostream).
+
+IOStream : contains input output functions, to print to screen and receive text from keyboard. https://cplusplus.com/reference/iostream/
+Can call on special characters that are part of libraries. Ex: std::endl is a symbol to add the character for endLine
+
+std::cout 
+standardlibrary::standardOutputStream, or default destination of the environment (an output log, a dedicated text object, wtvr environ defined) 
+
+std::cout<<"String" << "as many consecutive strings as you need" 
+
+
+
+OPERATIONS
+https://en.cppreference.com/w/cpp/language/operator_precedence
+
+Increment/decrement varName++ varName-- and ++varName --Varname (prefix vs suffix expressions)
+
+Arithmetic
+    + - * / (integer division, quotient) % (modulo, remainder)
+
+Bitwise Booleans: bit-by-bit between operands. NOT LOGICAL OPERATORS.
+    & (ampersand) Bitwise AND, | (single vertical bar) Bitwise OR, ~ (tilde) Bitwise NOT , caret ^ bitwise XOR
+    << >> left/right shift
+
+Logical (Booleans):
+    %%, && AND, || OR
+    "Short-circuit evaluation" &&
+        If first part of the statement is false, doesn't even check 2nd part.
+    ! NOT operator inverts its operand. If any other data 
+    No Logicial XOR because of Relational !=. XOR returns true if both values are the same (false false or True True), so a!=b is same result as XOR. 
+    ONLY FOR BOOLEANS
+        For NonBools, must convert them to bools first. Because we don't care in a XOR specifically if both values are inverted (we would care if one is) then we can use it to convert that data type to a bool (0 would become true, everything else would become false).
+        if(!a != !b) {}
+        Notice how it's the same as a!=b but also works for non-bools.
+
+
+https://en.cppreference.com/w/cpp/language/operator_comparison
+Relational:
+    >, <, >=, <=
+
+    Equality: == !=
+        (do not use = in a conditional, as it returns the assigned value: a = 5 returns 5, a == 5 compares if a is equal to 5)    
+    Do not use these with Zero. Any statement resulting in 0 == False in CPP (implicit boolean). Anything not 0 will be True. So you can safely use 
+    if(a%2){//code for True (remainder, a is Odd)} 
+    else {//code for False (no remainder, a is Even)}
+
+
+    Three-way <=>
+
+Pointer: These have a single operand, nothing to the left of operator.
+    Prefix * : Dereference Pointer (of variable to its right) 
+        Gives access to the variable it's pointing to. Ceases to be a pointer
+    Prefix& : Address of variable at its right (
+    -> Arrow : access to members of classes or structures from a pointer
+
+KEYWORDS
+return();
+A keyword to output a value from the function, ending it.
+0 is traditionally "no Error". Ex: 404 meaning "page not found"
+Can use parentheses around returned value or not: 
+    return(value) or return value
+
+
+switch(value){
+    case a:
+    //code
+    break
+}
+
+FLOW CONTROL
+if (condition){//code)}
+
+do/while loop:
+    MUST ensure the loop can succesfully runs at least once (it is run once regardless)
+    Example iterating through elements of a  vector by index:
+    i=0
+    do {
+        //code 
+        i++
+    } while(i < vector.size());
+
+while (condition){//code}
+    If condition is immediately false, then it won't run at all. (see do/while)
+
+    Can use pointers/iterators to loop through all elements of a vector.
+    vector.begin() = iterator pointing at first element
+    vector.end() = pointer past the last element
+
+    auto pointer = vector.begin();
+    while(pointer != vector.end()){
+        //code
+        pointer = next(pointer,1);
+    }
+
+for ()
+    When you know the range in advance. Can also use a while loop.
+
+    for(initialization; condition; increment){
+        //code
+    }
+
+    for loop with Iterator: ("range-based", bc it's a range of addresses?)
+    //WARNING:If you use variable of the same type as the element of vector/array, the element will be COPIED in the variable, each iteration. Use references instead. (& in example below)
+    for( type elementVariable& : containerToTraverse){
+        //code
+    }
+
+

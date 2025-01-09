@@ -1,0 +1,68 @@
+From .CPP TO .EXE : CODE PROCESSING
+Written code is Preprocessed, then Compiled.
+Because this is done before compiling, anything set as part of these directives has no SCOPE. They never use ;
+
+    INITIALIZER
+        (could be after Preprocessor directives)
+        Operates on some keywords like auto, to deduce the data type of the variable.
+
+    PREPROCESSOR DIRECTIVES https://learn.microsoft.com/en-us/cpp/preprocessor/hash-line-directive-c-cpp?view=msvc-170
+    # == directive
+    Can be used at multiple places in the same code. They are not statements, therefore out of that sequence. 
+
+    Software part of compiler tool chain : directives are information about what to remove/add in the code.
+    Used for constants, libraries, selecting code blocks, ........
+    #include (libraries) 
+        It inserts referenced file into the code, replacing the directive (#) line (#line). It replaces that single line with ALL of the specified file, so it can be used. A copy/paste of the entire thing into your file. This is why you want to include HEADERS(.h), not IMPLEMENTATION (.cpp) in your files. 
+        A further step in the process, the (linker?) will recognize the relation and create the required links to the compiled implementation file AKA Object?
+        <name>
+            Not a path: will always look for file in a given location, ie. Environment variable that sets a default folder!
+            Would otherwise need a path + file type (.h, .hpp)
+            <iostream>, <string>, <stdint.h>
+    #define MACRO_NAME (constants)*see further down
+        defines a symbol to mean whatever you put to its right. They become MACROS. Often written with all caps.
+        #define CAPACITY 5000 (no semicolumn, no = for assignment. It's not assigning, it's a preprocessor directive. It's not code.)
+        If used to drive an #ifdef (see below) directive, can be commented out to skip definition, skipping ifdef block.
+
+    #ifdef MACRONAME(select code block for different compile scenarios) "if defined", finishes with #endif
+        Can be used for debug purposes. Code between these will only be run if the macro is defined in the code.
+        Macro doesn't need a value if it's purely for an ifdev.
+
+    #endif
+    
+    #line digit-sequence ["filename"]
+        Tells the compiler to use line number + (optional) filename from that point on. That number is always incremented per line (to let you find it)
+        #line 20 
+            tells the compiler that the next line is line20 if an error occurs there. Can request those 2 values using preprocessor macros:  __LINE__ and __FILE__ 
+
+    #pragma once
+    Handy (not always supported) preprocessor directive to guard against multiple inclusions of the same file. Forces preprocessor to only PARSE / COMPILE the contents of the file once. 
+
+
+CODE TYPES SEEN BY THE COMPILER
+    DECLARATIONS https://learn.microsoft.com/en-us/cpp/cpp/using-declaration?view=msvc-170
+    Defining a word as a variable, function or other. 
+    Declarations are always made at a specific scope (in a function, in a library, in a loop, etc.). That scope can be changed. Exiting a scope == variables deleted from memory.
+        "using"
+        To bring an identifier to another scope as if it was part of it. Can be used to make children function. Page above is super clear for calling function from class D, doing something, then calling the parent function.
+
+    DIRECTIVES https://learn.microsoft.com/en-us/cpp/cpp/namespaces-cpp?view=msvc-170#using_directives
+        "using"
+        To bring an identifier (function, var, object...) into scope so it can be
+        1. Assigned to a variable (for shorter code?)
+
+TOKENS
+Smallest unit of any CPP program; they cannot be evaluated & simplified down.
+    
+Examples: 
+Keywords: #include, int, if, return
+    Reserved words
+    Qualifiers : const, volatile...  Modifications to how the compiler handles variables and constructs
+Identifiers: iostream, main, x, std, cout, endl
+    Variable names, functions, classes... Start w/ letter or underscore. Only contains letters, digits, underscores.
+Literals: 10, 5, "x is greater than 5"
+    Constant values. 2+2 is NOT a literal, it is an expression, but 4 is.
+Operators: +, =, >, <<
+    Assignment?, Arithmetic, comparisons, logical operators
+Punctuators: <, >, ;, {, }, (, )
+    Code structure

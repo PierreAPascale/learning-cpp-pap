@@ -4,9 +4,15 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "records.h"
 
+
 void initialize(StudentRecords&);
+void initialize2(StudentRecords&);
+void initialize_students(StudentRecords&);
+void initialize_courses(StudentRecords&);
+void initialize_grades(StudentRecords&);
 
 int main(){
     int id;
@@ -22,8 +28,13 @@ int main(){
     std::cout << std::endl << std::endl;
     return (0);
 }
-
 void initialize(StudentRecords& srec){
+    initialize_students(srec);
+    initialize_courses(srec);
+    initialize_grades(srec);
+}
+
+void initialize2(StudentRecords& srec){
     srec.add_student(1, "George P. Burdell");
     srec.add_student(2, "Nancy Rhodes");
 
@@ -38,4 +49,64 @@ void initialize(StudentRecords& srec){
     srec.add_grade(2, 1, 'A'); 
     srec.add_grade(2, 2, 'A');
     srec.add_grade(2, 4, 'B');
+}
+
+void initialize_students(StudentRecords& srec){
+    std::ifstream inFile;
+    std::string temp;
+    int sid;
+    std::string sname;
+    inFile.open("students.txt");
+    if (inFile.fail()) 
+        std::cout << "Students repository failed to initialize." << std::endl;
+    else
+        while (!inFile.eof()){
+            getline(inFile,temp);
+            sid = stoi(temp);
+            getline(inFile,sname);
+            srec.add_student(sid, sname);
+        }
+        inFile.close();
+}
+
+void initialize_courses(StudentRecords& srec){
+    std::ifstream inFile;
+    int cid;
+    std::string temp;
+    unsigned char ccredits;
+    std::string cname;
+    inFile.open("courses.txt");
+    if (inFile.fail()) 
+        std::cout << "Courses repository failed to initialize." << std::endl;
+    else
+        while (!inFile.eof()){
+            getline(inFile,temp);
+            cid = stoi(temp);
+            getline(inFile,cname);
+            getline(inFile,temp);
+            ccredits = temp[0];
+            srec.add_course(cid, cname, ccredits);
+        }
+        inFile.close();
+}
+void initialize_grades(StudentRecords& srec){
+    std::ifstream inFile;
+    std::string temp;
+    int sid;
+    int cid;
+    char grd;
+    inFile.open("grades.txt");
+    if (inFile.fail())
+        std::cout << "Grades repository failed to initialize." << std::endl;
+    else
+        while (!inFile.eof()){
+            getline(inFile,temp);
+            sid = stoi(temp);
+            getline(inFile,temp);
+            cid = stoi(temp);            
+            getline(inFile,temp);
+            grd = temp[0];
+            srec.add_grade(sid, cid,grd);
+        }
+        inFile.close();
 }

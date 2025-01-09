@@ -9,38 +9,46 @@ Student::Student(int the_id,std::string the_name){
 std::string Student::get_name()const{return name;} 
 int Student::get_id()const{return id;}
 
-enum class grades{A,B,C,D,F};
+//enum class grades{A,B,C,D,F};
 
+//Course definition
 Course::Course(int the_id,std::string the_name, unsigned char the_credits){
         id = the_id;
         name = the_name;
-        grades gr = grades::(the_credits);
-        credits = static_cast<int>(credited_grade);
+        credits = int(the_credits);
+        /* //With enum?
+        grades gr = grades::A;
+        
+        switch(the_credits){
+            case 'A':
+                gr = grades::A;
+                break
+            case 'B':
+                gr = grades::B;
+                break
+            case 'C':
+                gr = grades::C;
+                break
+            case 'D':
+                gr = grades::D;
+                break
+            case 'F':
+                gr = grades::F;
+                break            
+        }
+        credits = (int)gr;
+        */
     }
-    public:
-    std::string get_name(){return name;}
-    int get_id()const{return id;}
-    int get_credits()const{return credits;}
-    
-    private:
-    int id;
-    std::string name;
-    int credits;
-};
+std::string Course::get_name()const{return name;}
+int Course::get_id()const{return id;}
+int Course::get_credits()const{return credits;}
 
-class Grade{
-    Grade(int student_id_i, int course_id_i, unsigned char grade_i){
-        student_id = student_id_i;
-        course_id = course_id_i;
-        grade = grade_i;
-    }
-    public:
-    //int get_student_id(){return student_id;}
-    //int get_course_id(){return course_id;}
-    unsigned char get_grade()const{return grade;}
-    
-    private:
-    int student_id;
-    int course_id;
-    unsigned char grade;
-};
+//Grade definition
+Grade::Grade(int sid, int cid, char grd){
+    student_id = sid;
+    course_id = cid;
+    grade = grd;
+}
+int Grade::get_student_id()const{return student_id;}
+int Grade::get_course_id()const{return course_id;}
+char Grade::get_grade()const{return grade;}
