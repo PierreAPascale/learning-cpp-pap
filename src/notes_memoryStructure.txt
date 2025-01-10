@@ -1,0 +1,46 @@
+STACK            
+Automatic variables go to the STACK, and are removed as soon as the scope is left.
+last-in, first-out (LIFO)
+Fast, Efficient, limited in size, Automatic.
+Loses all data once scope is left.
+    SCOPE
+    Region of program where a var is accessible. Typically, the block it's declared in (function, loop, conditional statement).
+    Any variable that needs to stay in memory should be allocated on the HEAP.
+
+HEAP
+Dynamic allocation of objects sends them to the HEAP : new and delete keywords.
+Pointers are used to refer to these objects, whose addresses are defined on the fly.
+Larger, flexible, manual.
+    POINTERS
+    The only way to access memory on the Heap.
+    Linked lists, trees, graphs, all rely on dyn alloc data and pointers to link their nodes together
+    Functions can share and modify data across a program (modular+flexible)
+        EX:
+        Pointers to Void
+        Address of any data type. void pointer doesn't have a type, so can't dereference it without casting: program doesn't know what data to expect, which it needs to increment/decrement addresses/ use it as an array with[].
+            Syntax: 
+                void *genericPointer = &value;
+                *(static_cast<float*>(genericPointer)  //makes it a float pointer, then derefs it
+                *(float*) genericPointer //makes it a float pointer, then derefs it C-style
+
+        SMART POINTERS https://en.cppreference.com/book/intro/smart_pointers 
+        std::unique_ptr
+            Exclusive ownership (no risk of dangling from multiple pointers). A single copy of that object can exist, ever.
+        std::shared_ptr
+            Automatically releases memory for an object when last shared pointer is destroyed/reset to nullptr. (Counts references)
+            
+        std:weak_ptr
+            Releases memory when...
+    MEMORY LEAK
+    Memory not deallocated. 
+
+    DANGLING POINTERS
+    Pointer that continues to reference a mem location that's been deallocated.
+    Set pointers to nullptr after deallocating their pointed content.
+        -Does "Delete"-ing the pointer remove both the pointer variable AND the contents?
+            If so, what creates dangling pointers? Multiple Pointers towards the same addres, with 1 calling "delete"?
+    
+NO GARBAGE COLLECTION
+
+
+

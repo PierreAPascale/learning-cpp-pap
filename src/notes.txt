@@ -49,8 +49,9 @@ SYNTAX
 Case-Sensitive
 Indents ignored by converters, but readability ++
 ; at end of most lines, specifically at the end of STATEMENTS.
-    STATEMENTS do not return values, they only do actions.
-    EXPRESSIONS return values from constants, variables and operators.
+    STATEMENTS do not return values, they only do actions. (Representation of an action)
+    EXPRESSIONS return values from constants, variables and operators. (Representation of a calculation)
+        ASSIGNMENTS expressions is code that assigns a value to a variable. It assigns a value to a variable and then returns the value assigned. Left-hand side must be able to contain value, right-hand side is an expression that will define the value. Data Type must match (keeping implicit conversion in mind: just because it works doesn't mean it's working as intended)
 Library inclusions are NOT statements. (Preprocessor Directive)
 Functions are NOT statements. It only links a sequence of statements (body of the function) to a name/arguments/etc.
 
@@ -116,7 +117,17 @@ Standard Library  cppreference.com
         <locale> Localization features
         <thread> Class + funcs to create and handle threads
         <mutex> Mutual exclusion primitives for thread synchronization 
-            
+
+        <chrono> Functions to keep track of time
+            ::system_clock //Object connected to the system's clock. 
+                Object::now() //Current time
+            ::time_point<clockObject> //A point in time. start, end, midway...
+            ::duration<double> //Allows arithmetic to work with TimePoints (overloaded operator in TimePoint class)
+
+            <> "Generic Programming", in these cases, used for class templates.
+        <utility>
+        <memory>
+            Pointer-related functions  
 STD LIBRARY (STL) COMPONENTS
     CONTAINERS
     std:: vector, list, map
@@ -131,56 +142,47 @@ STD LIBRARY (STL) COMPONENTS
 
 
 
-Calling Functions from libraries is done by calling members of a library with OPERATOR - SCOPE RESOLUTION :: 
-Scope is where the function/variable is accessible in the code, so you're telling where to find the object (here, defined in library)
-member::object
-(see Enum Classes - :: is used to access the single 'enumeration' object.)
 
-OPERATOR - MEMBER OF . (dot)
-To access a member of an object
-
-OPERATOR - MEMBER OF POINTER ->
+OPERATIONS/OPERATORS
+SEE THIS PAGE FOR A TABLE https://en.cppreference.com/w/cpp/language/operator_precedence
+EXTRA INFO https://en.cppreference.com/w/cpp/language/eval_order
 
 
-OPERATOR - LEFT BOUND INSERTION << Data can be inserted into Object (instance of class) to their left using this. 
-    Takes care of converting from int/float to string when inserting in ofstream (fstream) and cout (iostream).
-
-IOStream : contains input output functions, to print to screen and receive text from keyboard. https://cplusplus.com/reference/iostream/
-Can call on special characters that are part of libraries. Ex: std::endl is a symbol to add the character for endLine
-
-std::cout 
-standardlibrary::standardOutputStream, or default destination of the environment (an output log, a dedicated text object, wtvr environ defined) 
-
-std::cout<<"String" << "as many consecutive strings as you need" 
+INCREMENT/DECREMENT
+    varName++ varName-- and ++varName --Varname (prefix vs suffix expressions)
+        Prefix returns value (expression is evaluated) AFTER incrementing.
+        Postfix returns value (expression is evaluated) BEFORE incrementing.
+        Prefixes can be chained: ++ ++a
 
 
 
-OPERATIONS
-https://en.cppreference.com/w/cpp/language/operator_precedence
-
-Increment/decrement varName++ varName-- and ++varName --Varname (prefix vs suffix expressions)
-
-Arithmetic
+ARITHMETIC
     + - * / (integer division, quotient) % (modulo, remainder)
 
-Bitwise Booleans: bit-by-bit between operands. NOT LOGICAL OPERATORS.
+BITWISE Booleans: bit-by-bit between operands. NOT LOGICAL OPERATORS.
     & (ampersand) Bitwise AND, | (single vertical bar) Bitwise OR, ~ (tilde) Bitwise NOT , caret ^ bitwise XOR
     << >> left/right shift
 
-Logical (Booleans):
+LOGICAL (Booleans):
     %%, && AND, || OR
     "Short-circuit evaluation" &&
         If first part of the statement is false, doesn't even check 2nd part.
     ! NOT operator inverts its operand. If any other data 
-    No Logicial XOR because of Relational !=. XOR returns true if both values are the same (false false or True True), so a!=b is same result as XOR. 
-    ONLY FOR BOOLEANS
+    No Logical XOR because of Relational !=. XOR returns true if both values are the same (false false or True True). So a!=b, with a= true and b=false, is the exact inverse of Logical XOR : false false & true true both return FALSE, while false true & true false both return TRUE.
+        ONLY FOR BOOLEANS
         For NonBools, must convert them to bools first. Because we don't care in a XOR specifically if both values are inverted (we would care if one is) then we can use it to convert that data type to a bool (0 would become true, everything else would become false).
         if(!a != !b) {}
         Notice how it's the same as a!=b but also works for non-bools.
 
+COMPOUND ASSIGNMENT
+    =, +=, -=, *=,/=, %=
 
-https://en.cppreference.com/w/cpp/language/operator_comparison
-Relational:
+COMPOUND BITWISE ASSIGNMENT
+    <<=, >>=, &=, ^=, |=    
+
+COMMA OPERATOR , -     
+
+RELATIONAL https://en.cppreference.com/w/cpp/language/operator_comparison
     >, <, >=, <=
 
     Equality: == !=
@@ -192,12 +194,56 @@ Relational:
 
     Three-way <=>
 
-Pointer: These have a single operand, nothing to the left of operator.
-    Prefix * : Dereference Pointer (of variable to its right) 
-        Gives access to the variable it's pointing to. Ceases to be a pointer
-    Prefix& : Address of variable at its right (
+TERNARY
+    conditionExpr ? ifTrue : ifFalse - Shorthand of if/else statements. 
+
+ACCESS
+    OPERATOR - SCOPE RESOLUTION ::  Calling Functions from libraries is done by calling members of a library
+    Scope is where the function/variable is accessible in the code, so you're telling where to find the object (here, defined in library)
+    member::object
+    (see Enum Classes - :: is used to access the single 'enumeration' object.)
+
+    OPERATOR - MEMBER OF . (dot)
+        To access a member of an object
+
+
+POINTER: These have a single operand, nothing to the left of operator.
+    Prefix * : 
+    Prefix & : Address of variable at its right (
     -> Arrow : access to members of classes or structures from a pointer
 
+
+
+    OPERATOR - MEMBER OF POINTER ->
+        Similar to Member Access, but follows all pointers until it finds an object, and accesses its member.
+
+    OPERATOR - ADDRESS OF & Returns the address of a function (optional) or variable.
+
+    OPERATOR - DEREFERENCE/INDIRECTION * Dereference Pointer (of variable to its right) 
+        Gives access to the variable it's pointing to. Ceases to be a pointer
+
+    OPERATOR - POINTER-TO-MEMBER .*, ->* - Combines operators to get the pointer of the member.    
+
+DATA
+    OPERATOR - (LEFT BOUND) INSERTION << Data can be inserted into Object (instance of class) to their left using this. 
+        Takes care of converting from int/float to string when inserting in ofstream (fstream) and cout (iostream).
+
+    OPERATOR - (RIGHT-BOUND) EXTRACTION >> Data is extracted from an object and inserted into variable/object to the right.
+
+MEMORY ALLOC
+    Dynamic Alloc new, new[] - Dynamically assigns memory for object. Accessed using pointers.
+    Dynamic Dealloc delete, delete[]
+CAST
+    Functional Cast - type(), type{}
+
+    Static Cast - (type) CStyle
+
+SUBSCRIPT
+    a[] -  Accessing sub-addresses of arrays, typically through indices  
+
+
+UNARY
+    Plus/Minus +a -a - The sign to define if argument is positive or negative.
 
 KEYWORDS
 return();

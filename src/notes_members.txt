@@ -70,6 +70,7 @@ COMMON DATA TYPE LIBRARIES : STRING STANDARD LIBRARY
     STRINGS
         Requires <string> STL (Standard Template Library)
         "string"
+        Their type is a Pointer to a Const Char : when using typeid, will return Pointer to char: PKc (Pointer P, K constant, c Char)
 
 VARIABLE MEMORY
 
@@ -149,6 +150,41 @@ Constant, Volatile:
 
     POINTERS
         Data type for memory addresses. System architecture (32bit, 64bit, 96bit) dictates maximum memory size of the pointer, ie. the full precision that data could ever be located at. Pointers will use X Bytes, depending on what they need to contain.
+        (The content of a pointer is an Address)
+
+        Declaring a pointer only allocates memory for the address, not for what's pointed to.
+
+        NULL and nullptr
+            NULL = legacy, constant doesn't point to a valid address. Integer value 0 (bad type safety)
+            nullptr = constant of type nullptr_t
+                Type made for that purpose: no valid address
+                Distinct type that is neither pointer nor member type
+                Defined in header <cstddef>, std::nullptr_t
+            Never dereference a null pointer.
+
+        POINTERS AND ARRAYS
+        Array variables (and strings, as arrays of chars), are a contiguous block of memory. They are not pointers, BUT they "decay" into a pointer to their first element. Immutable, sizeof returns the total array size in bytes (pointers return the pointer's size)
+        EX:
+        int arr[3] = {1, 2, 3};
+        int *ptr = arr; // Pointer to the first element of the array. No need for & here.
+        int *ptr = &arr[0] //equivalent line.
+
+        Can move across arrays using the initial pointer: 
+            *(ptr+1)  //doesn't change the pointer, but offsets address. ++ would've incremented. Compiler knows how many bytes to move to get to the next item.
+            ptr[1] //doesn't change the pointer, but lets us use the pointer as if it was an array itself.
+            [] // This operator actually does this: SUBSCRIPT, offsetting the address and dereferencing it.
+
+        POINTERS AND OBJECTS
+            Dynamic instances can be handled (memory de/allocated to them) with New/Delete
+            Create them with new className(constructorArgs)
+            delete className(destructorArgs)
+
+            Dynamic Allocation of objects sends them to the HEAP.
+            Automatic variables go to the STACK, and are removed as soon as the scope is left.
+            See more in notes_memoryStructure
+
+
+
     Memory Map:
     Location (address), Unit (content)
     1 address per byte.
@@ -160,7 +196,6 @@ Constant, Volatile:
     
     Can also be VOID or NULL to point to any function or object requiring these.
 
-    Nullptr = a pointer of type nullptr_t (distinct type that is neither pointer nor member type). Defined in header <cstddef>, std::nullptr_t
 
         Symbols:
         dataType *ptrname;  (* == Indirection operator; "consider this an indirection")
@@ -186,10 +221,15 @@ Constant, Volatile:
         
         To use pointed data, *ptrName. 
         To access members of a class, basic way is: (*ptrName) to prioritize dereferencing the pointer in the sequence of operations.
+            MemberOf (.) has a higher precedence than Dereferencing, so *ptr.member() does not work! It's trying to access a member of pointer itself. The pointer doesn't have members, what it points to has members.
+            (*ptr).member() OR ptr->member()
+
         However, messy if trees and lists... Dedicated OPERATOR - MEMBER OF POINTER ->
         DESTRUCTOR
             delete varName;
             This keyword calls the destructor function of a class and removes it from memory.
+            Overloading the destructor:
+                ~className(args....)
         SMART POINTERS
         To prevent "dangling pointers" and memory leaks.
 
@@ -202,11 +242,18 @@ Constant, Volatile:
         POINTERS TO ARRAYS 
             int (*) 32 //Type "pointer to an array of 32 integers"
 
-    REFERENCES
-    type& name = memberToReference        
+    REFERENCES https://learn.microsoft.com/en-us/cpp/cpp/references-cpp?view=msvc-170 
+    type& name = memberToReference
+    Stores the address of an object, similar to pointers.
+
+    When created, they are of "reference type". They decay to their referenced type when used.
+        lvalue - Named variable
+        rvalue - temporary objects (&&: rvalue or universal ref based on context. Universal ref = lvalue)
+
     Simple rewiring of tokens
-        Not Pointers, nor objects, nor address (no array of ref bc no address)
-        Always initialized (guarantee of finding data)
+        Not Pointers, nor objects(no array of ref bc no address)
+        Cannot be used as addresses, only syntactically like objects.
+        Always initialized (guarantee of finding data) (not according to CPP ref)
         1 Ref = Alias to a single object (at declaration)
         Single level of indirection, ever.
 
@@ -238,25 +285,49 @@ ITERATORS
     Work like pointers (addresses); use the same Operators, such as ->
     Can be incremented or decremented to move within a given container. +1 == next element in container. Incrementing a pointer is NOT the same thing: next element in memory, not only in container.
 
+DECAY
+    Decay refers to the process of converting certain types into simpler ones when passed as function arguments or used in other contexts.
+    Can be called explicitly using std::decay_t<type[value]>
+
+    ARRAYS
+    - Using an array name in most expressions ; Arrays decay to pointers to their first element.
+    - Passing an array to a function by value
+
+    FUNCTIONS
+    - Passing a function to another function by argument
+    
+    QUALIFIERS
+    - const and volatile are removed
+
+    REFERENCES
+    -Converted to the type they refer to (instead of being "reference type")
+
+
+
 TYPE CASTING
     Specify how to interpret data. 
-    Ex: int & float are very different in their binary encoding.
+        Both int and float can be used to represent the same number.
+        Under the hood, they are very different in their binary encoding.
+    STATIC CASTING
+        C++-Style: static_cast<float>(expression)
+        C-Style: (float)(expression)
 
     Implicit Conversion
-        float VarName = 25.3; //type is defined as Float, but expression says Double (25.3f would be float). It is implicitly converted to a Float.
-        int VarName = floatExpression // converts from 25.3 float to 25 int 
-        uint32_t = int32_t expression // converts from unsigned to signed, copying binary value as-is but interpreting it differently (wrapping around to show the complement value; -7 converted to 4294967289. Most significant bit = 1, AKA huge number.
+        IF IT FITS within the new set of numbers, the Cast (conversion) will work as expected, converting from one binary encoding to the other when stored in a variable:
+            float FloatVarName = 25.3; //type is defined as Float, but expression says Double (25.3f would be float). Implicitly converted to a Float.
+            int IntVarName = FloatVarName // converts from 25.3 float to 25 int 
+        IF IT DOES NOT FIT, copies the binary as-is when stored into a variable. You may see wrap-around:
+            uint32_t = int32_t expression // converts from unsigned to signed, copying binary value as-is but interpreting it differently (wrapping around to show the complement value; -7 converted to 4294967289. Most significant bit = 1, AKA huge number.
 
 
     Explicit (Casting) Conversion: explicitly specifying the data type of an expression, so that the compiler interprets it as such.
         Syntax: (desiredType) expression // Expression that evaluates to value you want to convert
         uint32_t uint32_number= -7; // stores binary value as complement of -7, AKA 4294967289
-        (int32_t) uint32_number // this expression will result in the expected -7 if printed, unlike Implicit conversion. This is because it took the binary value but interpreted it differently, as an unsigned int.
+        (int32_t) uint32_number // this expression will result in the expected -7 if printed, unlike Implicit conversion. This is because it took the binary value but interpreted it differently, as an unsigned int. IMPORTANT: the binary data in that variable is still the complement.
 
-
-    Important: "Constant Expressions"
+CONSTANT EXPRESSIONS
     (5/9) // This expression doesn't make it to the code (which is then executed by the processor).
-    Why? Because it can be evaluated when compiled. 
+        Why? Because it can be evaluated when compiled. 
 
     From Copilot:
         This can be evaluated when compiled:
@@ -270,13 +341,12 @@ TYPE CASTING
         const, or constexpr keywords, both enforce the value cannot be changed at runtime.
 
 
-Struct
-Extern
 
 COLLECTIONS
     ARRAYS
     (see VECTORS for dynamically-sized, memory-managed arrays)
-    Collections of data, all of the same type (as opposed to structs?). Fixed Size.
+    Collections of data, all of the same type (as opposed to structs). 
+    Fixed Size
     Indexed from 0 to N-1 (N = capacity of array)
     Contiguous in memory: next to each other, creating a sequential block of memory addresses
     Declaration only:
@@ -288,12 +358,20 @@ COLLECTIONS
         arrayName[itemIndex]
         arrayName[itemIndex] = expression;
 
+    Size of arrays can use integers, or a specific type: size_t
+
     ENUMERATIONS
-    List of identifiers (enumerators) that are integers.
+    List of named identifiers, that correspond to integers from 0 to x (enumerators).
         In C, operate in global scope... aka naming conflicts
         Limited type safety
     In C++ 11, Enum Classes (scoped enums, strongly typed enums). Encapsulation == OOP!
-    Type Safety to prevent conversion between enum and int
+    Type Safety prevents implicit conversion between enum and int (not the same thing, can create errors)
+    
+    When you assign an enum to an int variable, you use its identifier, but code stores the integer associated with that identifier. 
+    When you return that variable, it'll give you the integer identifier. THIS CAN BE DANGEROUS.
+    Use Class Enums (see below) and make your variable of type enumClassName.
+    When you return a class enum variable's value, it'll give you the identifier, and you can cast it to (int) if needed.
+
 
     Non-Scoped Enums example:
 
@@ -311,7 +389,7 @@ COLLECTIONS
     c = data1; //printing this will print 1, because the value 5 was only true as part of Main. Because a is a local variable in main, main would output it first. :: could be used to define the scope and get main's value... but still a problem. data0, data1, etc. are names which do not have a scope, as they're outside all functions. Reusing the name will cause an error: redefining the same names with potentially different values. What would the program output? This is compiled, not interpreted, so it doesn't simply take the last one.
 
     Class Enums (scoped, strongly typed): <cstdint>?
-    enum class enumName{data0, data1, data2}; //because this is now a class, the values are in the scope of that class. No need for "" for strings; they are simply tokens that can be interpreted as integers. Doing so returns the index in the enumeration, AKA the enumerator
+    enum class enumName{data0, data1, data2}; //because this is now a class, the values are in the scope of that class. No need for "" for strings; they are simply identifier tokens that can be interpreted as integers. Doing so returns the index in the enumeration, AKA the enumerator
     int main(){
         int a;
         // a = enumName::data1 (writing it like this will be an error if data1 isn't an int; that's expected (strongly typed))
@@ -381,6 +459,9 @@ CONSTANTS
         constexpr
             VARIABLE or RESULT OF A FUNCTION (expressions) evaluated at compile time, instead of runtime. 
             FUNC: Only does when given CONSTANT arguments.
+
+        extern ( )
+
 
         static (Specifier)
 
