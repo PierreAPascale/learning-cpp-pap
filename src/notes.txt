@@ -10,7 +10,9 @@ ENCAPSULATION
 Of Models; to only include information about themselves.
 Don't include gas price in the car model; the gas station model would have it.
 
-CLASSES
+CLASS & STRUCT
+- Class Members are by default PRIVATE 
+- Struct Members are by default PUBLIC
 Classes contain two types of members: data + function
 Car.make, Car.paint
 Each instance = an object of the class (can have 3 car objects)
@@ -21,11 +23,32 @@ Each instance = an object of the class (can have 3 car objects)
             var2 = arg2;
         }
     Best practice: discernable names (_i for initializer variables)
+    As a function, can be Overloaded for different parameters!
+    Automatically allocates memory for members in the stack.
+    Must do it manually for the Heap.
+        heapMember = new type
+
+    this KEYWORD
+        Acts as pointer to the current instance(object)
+            this->memberName = value;
+        Lets you reuse names by being explicit about the scope:
+            Inventory(int capacity){
+                this->capacity = capacity //Member var capacity is set to the constructor's parameter 'capacity' 
+            }
+        So common in constructors there's a shorthand:
+        MEMBER INITIALIZATION LIST
+        className(args): memberName(value), memberName2(value2) {} //Requires different names for member and argument (_i for initializer is common)
+
     DESTRUCTORS
     Function to define how an object is destroyed.
     Declaration: ~className();
     Implementation: className::~className(){}
 
+    Occurs when destroyed (out of scope on the stack, or explicitly on the Heap w/ delete)
+    If your class created extra objects on the Heap, they have to be deleted manually too. Destructor is a good place to ensure it. 
+        ~Inventory(){
+            delete items; //Heap-allocated member.
+        }
     ACCESS
     Of Members.
     Private : accessible only by itself, not even by inherited classes
@@ -34,16 +57,47 @@ Each instance = an object of the class (can have 3 car objects)
 
         GETTERS and SETTERS
         To keep variables from being read and written by other objects directly, add validation, etc., access is restricted.
-        
-INHERITANCE AND POLYMORPHISM
-Subclasses (class based on another) and superclasses (the class it inherits from)
-Poly = Function can be implemented differently in subclasses (inherited) vs superclass
-"Children" and "Sibling" classes with these re-implementations are polymorphic.
+        "ADDERS"/"MODIFIERS"
+        The act of modifying the contents of a member (ex: adding an element to the target of a vector pointer member).
+        Not modifying the Pointer, only the contents of what's pointed to.
 
-Can add on to a parent's implementation by calling it in the Child's polymorphic implementation.
-    See "using" Declarations (not directives)
-    By default, children classes don't have their parents' functions in their scope. Can still be called: the parent's scope is used.
-    With the "using" declaration, can define a polymorphic implementation at the scope of the child class, using the same identifier.
+
+
+    INHERITANCE AND POLYMORPHISM
+    Subclasses (class based on another) and superclasses (the class it inherits from)
+    Poly = Function can be implemented differently in subclasses (inherited) vs superclass
+    "Children" and "Sibling" classes with these re-implementations are polymorphic.
+
+    Can add on to a parent's implementation by calling it in the Child's polymorphic implementation.
+        See "using" Declarations (not directives)
+        By default, children classes don't have their parents' functions in their scope. Can still be called: the parent's scope is used.
+        With the "using" declaration, can define a polymorphic implementation at the scope of the child class, using the same identifier.
+
+        INHERITANCE ACCESS SPECIFIERS
+        Private: When you want to implement a derived class from a base class, but you don't want the derived class to expose the base class's interface.
+            EX: I want to implement a virtual function (which had to be Protected), but I don't want any further children to redefine it.
+        Protected: When you want to provide access to the base class's members to the derived class and its further derived classes, but not to users of the derived class.
+            EX: I want to implement a derived class, but restrict its public members to protected (use-case???)
+
+        COMPOSITION
+            Creating a member variable of a base class' type in a derived class.
+
+        SYNTAX
+        class B : specifier A {...} 
+
+
+        OVERRIDING FUNCTIONS
+        Typically used with Virtual (if you want to guarantee the Child's override is used even if called using parentType).
+            SYNTAX
+            returnType funcName(args) override{//body}
+    ABSTRACT CLASS (see Functions in notes_members)
+    Enforced parent classes (cannot have instances)
+    Used as interfaces to implement
+    Contains methods without implementation (pure virtual), strictly Signatures.
+
+    VIRTUAL BASE CLASS
+    For inheritance structure management: Prevented from being present multiple times when multiple-inheritance is applied.
+        I assume: C inherits B (which inherits A) and A. Error unless Virtual.
 
 SYNTAX
 Case-Sensitive
@@ -54,6 +108,24 @@ Indents ignored by converters, but readability ++
         ASSIGNMENTS expressions is code that assigns a value to a variable. It assigns a value to a variable and then returns the value assigned. Left-hand side must be able to contain value, right-hand side is an expression that will define the value. Data Type must match (keeping implicit conversion in mind: just because it works doesn't mean it's working as intended)
 Library inclusions are NOT statements. (Preprocessor Directive)
 Functions are NOT statements. It only links a sequence of statements (body of the function) to a name/arguments/etc.
+
+TOKENS
+Smallest unit of any CPP program; they cannot be evaluated & simplified down.
+    
+Examples: 
+Keywords: #include, int, if, return
+    Reserved words
+    Qualifiers : const, volatile...  Modifications to how the compiler handles variables and constructs
+Identifiers: iostream, main, x, std, cout, endl
+    Variable names, functions, classes... Start w/ letter or underscore. Only contains letters, digits, underscores.
+Literals: 10, 5, "x is greater than 5"
+    Constant values. 2+2 is NOT a literal, it is an expression, but 4 is.
+Operators: +, =, >, <<
+    Assignment?, Arithmetic, comparisons, logical operators
+Punctuators: <, >, ;, {, }, (, )
+    Code structure
+
+
 
 RESERVED IDENTIFIERS (KEYWORDS)
 int float double char bool if else switch case default for while do return void class struct public private protected virtual new delete const static namespace using try catch throw nullptr
@@ -81,6 +153,9 @@ Example hierarchy:
 
 Standard Library  cppreference.com
     Input/Output library
+
+        
+
         <iomanip> (iomanip.h) header, for manipulators of inputs/outputs, not only streams.
             ::get_time (function) gets characters from the input stream, interpreting as time and date
         
@@ -111,7 +186,20 @@ Standard Library  cppreference.com
             printf("Hello World!\n")
 
         <vector> Vector container class
+        <string> String Class (array of characters w/ supporting functions)
+            std::to_string(var)
+        <cstring> C-Style Strings functions, to manipulate Char arrays.
+            Always has a "null" character at the end, to tell Computer it's the end of the string. Must make sure, as some string functions could keep going past our string if not careful.
+                Assign last element: 
+                    arrayName[(sizeof(array)-1)]= ('\0');
+            strncpy(buffer,string,max string size) //string copy 
+                Arrays let you use sizeof()
+            strlen()
+                Returns number of characters in the string (not its max size) 
+            strncat(A, B, maxCharactersToAddToResultArray) or strcat_s()
+                max = sizeof(A) - strlen(A) - 1
         <algorithm> Sorting, searching, manipulating data
+            ::find(iteratorStart,iteratorEnd, itemToFind), returns iterator to found element or element past last element(end() iterator)
         <memory> Smart Pointers. ex: shared_ptr, unique_ptr
 
         <locale> Localization features
@@ -124,11 +212,18 @@ Standard Library  cppreference.com
             ::time_point<clockObject> //A point in time. start, end, midway...
             ::duration<double> //Allows arithmetic to work with TimePoints (overloaded operator in TimePoint class)
 
-            <> "Generic Programming", in these cases, used for class templates.
+        
         <utility>
-        <memory>
-            Pointer-related functions  
-STD LIBRARY (STL) COMPONENTS
+
+        <memory> Pointer-related functions, like smart pointers
+
+        <complex> Complex numbers
+            complex<varType>(real,imaginary)
+                Template, with constructor using REAL + IMAGINARY parts
+
+    Template definition operators < > can be problematic on older compilers when stacked:
+        std::vector<std::complex<double>> varName //Here, a vector variable, of type complex number (double float). >> CAN be mistaken as right-shift insertion! (C++11 fixes it). Fix was to add space. > >          
+STL COMPONENTS
     CONTAINERS
     std:: vector, list, map
     <vector>
@@ -141,9 +236,18 @@ STD LIBRARY (STL) COMPONENTS
     Objects used to traverse containers
 
 
-
+BUFFER
+    Input-Output systems. 
+    Smaller, fast memory component between CPU & Main memory.
+    Temp space used to store data while it is being transferred between different parts of a program or between the program and external devices.
+    Store data in a buffer, use it, empty it. Waits before operation is finished before sending data: prevents extra read/writes
+    "Buffer Overflow": More data than its size allows.
+    "Flushing": Operation to send out data from the buffer in that state (used w/ std::cout/cin to ask for user input with a phrase)
 
 OPERATIONS/OPERATORS
+
+Unary, Binary, Ternary (operate on 1, 2 or 3 operands)
+
 SEE THIS PAGE FOR A TABLE https://en.cppreference.com/w/cpp/language/operator_precedence
 EXTRA INFO https://en.cppreference.com/w/cpp/language/eval_order
 
@@ -161,6 +265,8 @@ ARITHMETIC
 
 BITWISE Booleans: bit-by-bit between operands. NOT LOGICAL OPERATORS.
     & (ampersand) Bitwise AND, | (single vertical bar) Bitwise OR, ~ (tilde) Bitwise NOT , caret ^ bitwise XOR
+        Bitwise: each bit is considered independently.
+        (2 & 5) is False, because 00000010 and 00000101
     << >> left/right shift
 
 LOGICAL (Booleans):
@@ -194,8 +300,13 @@ RELATIONAL https://en.cppreference.com/w/cpp/language/operator_comparison
 
     Three-way <=>
 
-TERNARY
-    conditionExpr ? ifTrue : ifFalse - Shorthand of if/else statements. 
+TERNARY OPERATOR / CONDITIONAL OPERATOR
+    conditionExpr ? ifTrue : ifFalse - Shorthand of if/else statements. Expressions in all 3.
+    Definition of ternary: "Takes 3 operators"
+
+    Can chain for multiple if/else (Ternary operator can be part of any of the 3 expressions). Gets unreadable quick when nesting.
+        std::string difficulty = (choice == 1) ? "Easy" : (choice == 2) ? "Medium" : "Hard";
+    Use parentheses to clarify expressions. For humans, not compiler.
 
 ACCESS
     OPERATOR - SCOPE RESOLUTION ::  Calling Functions from libraries is done by calling members of a library
@@ -256,14 +367,18 @@ Can use parentheses around returned value or not:
 switch(value){
     case a:
     //code
-    break
+    break;
+
+    default:
+        //code triggered if no conditions match
 }
+
 
 FLOW CONTROL
 if (condition){//code)}
 
 do/while loop:
-    MUST ensure the loop can succesfully runs at least once (it is run once regardless)
+    MUST ensure the loop can succesfully runs at least once (it is run once regardless) (Does the body, then evaluates.)
     Example iterating through elements of a  vector by index:
     i=0
     do {
@@ -271,8 +386,12 @@ do/while loop:
         i++
     } while(i < vector.size());
 
+    USE CASES:
+        Initializing settings, displaying a menu
+
+
 while (condition){//code}
-    If condition is immediately false, then it won't run at all. (see do/while)
+    If condition is immediately false, then it won't run at all. (see do/while) (Evaluates, then does the body if TRUE)
 
     Can use pointers/iterators to loop through all elements of a vector.
     vector.begin() = iterator pointing at first element
@@ -284,6 +403,16 @@ while (condition){//code}
         pointer = next(pointer,1);
     }
 
+    EXAMPLE: Keep asking for a valid input until it's correct:
+    std::string playerName;
+    std::cout << "Enter your character name (must be non-empty): ";
+    std::getline(std::cin, playerName); //Similar to extracting from cin, but supports more than 1 word
+    while (playerName.empty()) {
+        std::cout << "Character name cannot be empty. Please enter a valid name: ";
+        std::getline(std::cin, playerName);
+    }
+
+
 for ()
     When you know the range in advance. Can also use a while loop.
 
@@ -291,10 +420,189 @@ for ()
         //code
     }
 
-    for loop with Iterator: ("range-based", bc it's a range of addresses?)
+    for loop with Iterator: ("ranged" or "range-based", bc arrays are ranges of addresses)
     //WARNING:If you use variable of the same type as the element of vector/array, the element will be COPIED in the variable, each iteration. Use references instead. (& in example below)
-    for( type elementVariable& : containerToTraverse){
+    /
+    for( type iteratorVariable& : containerToTraverse){
         //code
+    }
+                    Also called (elementVariable : sequence)
+
+
+
+
+
+GENERIC PROGRAMMING
+Reusable code where dataTypes are NOT specified - the instance defines the data type. 
+"Compile-Time Polymorphism": 
+Data types specified at var definition OR object instantiation -> Polymorphism resolved at compile time.
+"Run-Time Polymorphism": A traditional approach.
+
+CLASS TEMPLATES <Type> 
+Constructs that take on a type at compile time, instead of being specified.
+
+SYNTAX: 
+template<typename T> //both template & typename are keywords. T is now a placeholder type: Whatever variably it's given, "a" in the example below, it'll take on the corresponding type, automatically. Compiler handles the variants needed.
+
+int size_in_bits(T a) {
+    return sizeof(a)*8;
+}
+//Now valid:
+size_in_bits(21)
+size_in_bits('f')
+size_in_bits(2.0f)
+
+Templates can be used in class Constructors to make input types versatile without rewriting code.
+Data members must also be of "template type".
+Want to set a position? 
+Integer, Float, Double, Strings - all will work. Though finding a common constructor code to fit it all could be harder. 
+    You CAN Overload for specific types in addition to template: will be preferred over template.
+Implicit conversions are applied unless "explicit" keyword used before Constructor.
+        struct MyClass{
+
+            MyClass(int val):value(val){} //Constructor
+            // Conversion operator in MyClass 
+            operator int() const {
+                return value;
+            }
+
+        }
+        int main(){
+            myClass obj(42);
+            // Implicit conversion using the conversion operator
+            int x = obj; //Saying type x= Something means "implicitly convert this to an integer if it isn't"...
+            // Explicit conversion using static_cast
+            int y = static_cast<int>(obj);  //Only works because of Operator overload
+            }
+
+STL : STANDARD TEMPLATE LIBRARY
+Library of templates, typically included in Standard Library (STD).
+
+4 COMPONENTS
+    CONTAINERS: store collections (array-like) of data (vectors, stacks, queues)
+    https://en.cppreference.com/w/cpp/container
+        Sequence: Storage in a Linear sequence
+        Associative: KVP (fast look-up, insertion, deletion)
+        Unordered Containers: Similar to associative, but order is not maintained
+        Adapters: (Not containers) Behavior modifiers of containers for different interface
+
+        SEQUENCE: 
+            Vectors <vector>: Dynamic, fast random access (fetch any element without going through previous ones), resizable. push_back
+            Deques <deque>: double-ended queues (insert/delete at both ends) push_front + push_back
+            Lists <list>: doubly-linked list, fast insertion+deletion from anywhere in list. NO random access
+        
+        ASSOCIATIVE:
+            Sets <set>: Ordered, unique elements
+            Pair <utility>: class storing 2 different objects as 1 unit. Not a container. .first, .second
+            Maps <map> : Dictionaries (KVP). "Set of pairs" : unique keys singularly-linked with values
+
+        UNORDERED CONTAINERS: Equivalent objects but not ordered; faster to search/insert/delete (look-ups)
+            unordered_map
+            unordered_set
+        
+        CONTAINER ADAPTERS: Modify the behavior of containers
+        (Underlying "deck" container, but can work with a vector or list)
+            Stack <stack>:Last-In-First-Out //Menu states or game states that go down a branching/tree structure
+                std::stack<datatype> ; .push() .top() .pop()
+                    .top returns last element added.
+                    Backtracking or Undo operations!
+            Queues <queue>: First-In-First-Out
+                std::queue<datatype> ; .push() .front() .pop()
+                    .push adds to end of the queue. .pop removes First element.
+                    Event queues (things always happening in order, one after the other)
+            Priority Queues <queue>: Sorted order of elements.
+                std::priority_queue<type> ; .push() .top() .pop()
+    
+    Iterators: objects similar to pointers to traverse containers efficiently & manipulate them generically
+        Templates at their core.
+        Iterators are addresses, and can therefore be dereferenced like pointers. 
+        POINTERS VS ITERATORS : Subset and Superset
+            Pointers: 
+            Variables that can be indirected to refer to memory location. Part of what many iterators do, so pointers are a type of iterator.
+                EX: Using integer indexes in arrays: variables that can be indirected to refer to a memory location. Doesn't make all integers iterators, but in that context, they are.
+            Iterators: 
+            An abstraction of that concept - an element to traverse containers (pointers: variables to traverse the "memory" container. Not all containers.)
+            Requirements for object to be an iterator : 
+                Input iterator - Read one-way, one-pass (read-only, forward only, traversing container twice won't give same result... UNORDERED??)
+                    Uses: input streams (keyboard buffers, read-only files)
+                Output - Write one-way, one-pass
+                    Uses: output streams, writing to write-only files
+                Forward - Read/Write one-way, multi-pass
+                    Read&Write = Mutable (writing specifically)
+                    Only moves forward
+                    Multi-Pass
+                    Uses: Singly-Linked List. By linked, means they have information necessary to move to the next element.
+                    forward_list, unordered_[multi]set, unordered_[multi]map 
+                Bidirectional
+                    Forward, + Forward&Backward traversal (doubly-linked list). 
+                    Uses:
+                    list, [multi]set, [multi]map
+                Random Access
+                    Bidirectional, + random access (indexing). Not only are they linked, they are also indexed ("list" outside of elements?)
+                    Uses: Vectors, deque, (arrays)
+
+        Generic Iterator Functions:
+            MEMBER FUNCTIONS of containers
+            .begin() : iterator to beginning of container
+            .end() : to end of container (past the last element)
+            .rbegin() : reverse iterator to the last element of the container (first of the REVERSE container) (not impl. in Forward iterators)
+            .rend() : iterator to the reverse end of the container (element right BEFORE first element) (not impl. in Forward iterators)
+    Algorithms: <algorithm> search, sort, modify, count
+        sort(iterator to starting element, iterator to end element, (opt) bool ) //Start & End are arguments, you can sort PART of a container. Iterators already point to a container, a memory space, so no need to pass the Container as argument!
+            Default Sort: STD::Less (C++20)
+            Sorting w/the reverse iterator = inverting the Sort
+            Sorting w/ a 3rd parameter : functor, resulting in bool. If true, evaluated data takes the slot (using "greater<int>" would sort from highest to lowest, because it checks if 1st element is higher than 2nd. 
+        find(start iterator, end iterator, value to find) // First occurence. Returns iterator to object, or to .end() if it can't find it.
+
+        count(start iterator, end iterator, value to count)
+
+
+    Functor(Function Objects): <functional> Overload parentheses, they maintain states & can be parametrized
+    Objects that can be used as if functions, by using ().
+        Overloading () operator!
+    They are objects (instances of classes), so they can hold data (maintain states)
+    #include <iostream>
+
+    // Functor class Example
+    class MultiplyBy {
+    public:
+        MultiplyBy(int factor) : factor_(factor) {}
+
+        int operator()(int value) const {
+            return value * factor_;
+        }
+    private:
+        int factor_;
+    };
+
+    int main(){
+        MultiplyBy multiplyBy5(5);  // Create a functor with factor 5
+        int result = multiplyBy5(10);  // Calls operator() with value 10
+        std::cout << "Result: " << result << std::endl;  // Output: 50
+        return 0;
     }
 
 
+        USE CASES
+        Keeping a state
+        Algorithms where function pointers would be used (+ flexible, + potential optim)
+            
+    Lambda Functions
+    Alternative to Functors : (can't maintain state)
+    Becomes an OBJECT (as any function call) on the Stack. Compiler defines it as a class, captured vars become data members, it's instantiated at runtime.
+    Inline unnamed functions that can "capture" variables at their scope.
+        CAPTURE 
+        
+        All variables can be captured using:
+        By Value : [=] All variables. [varName] A specific Variable. 
+        By Ref : [&] All variables used  
+        With Initilaizer [ a = expression ]
+        List : [ a, b]
+         
+         https://www.learncpp.com/cpp-tutorial/lambda-captures/
+    SYNTAX
+    [captureClause](arguments){//body}
+
+    USE CASES
+    One-Off operations, arguments to algorithms. Avoids having to define function with a name outside of its intended use-case (makes it easier to know that the function is for that one line only)
+    Local Scope operations

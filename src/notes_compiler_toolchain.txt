@@ -85,23 +85,21 @@ CODE TYPES SEEN BY THE COMPILER
 
         
 
+COMPILER
+    Converts code to Assembly file.
+
+ASSEMBLER
+    Converts Assembly file to Object Files.
+
+LINKER
+    Converts all object files in an executable (binary) file.
+    Object files are a common way of sharing LIBRARIES.
+
+
+To tell the toolchain which files to include in this entire process, IDEs typically have a "make" file.
+In Github Codespaces, tasks.json is the equivalent file.
 
     
-TOKENS
-Smallest unit of any CPP program; they cannot be evaluated & simplified down.
-    
-Examples: 
-Keywords: #include, int, if, return
-    Reserved words
-    Qualifiers : const, volatile...  Modifications to how the compiler handles variables and constructs
-Identifiers: iostream, main, x, std, cout, endl
-    Variable names, functions, classes... Start w/ letter or underscore. Only contains letters, digits, underscores.
-Literals: 10, 5, "x is greater than 5"
-    Constant values. 2+2 is NOT a literal, it is an expression, but 4 is.
-Operators: +, =, >, <<
-    Assignment?, Arithmetic, comparisons, logical operators
-Punctuators: <, >, ;, {, }, (, )
-    Code structure
 
 
 

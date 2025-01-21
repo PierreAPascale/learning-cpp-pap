@@ -54,7 +54,8 @@ COMMON DATA TYPE LIBRARIES : STRING STANDARD LIBRARY
     bool
     true, false
     Anything except 0 is true (implicit bool)
-
+        In condition expressions, == 0 is thus optional. It'll implicitly be converted to a bool.
+        if(number % 2) //If number is odd (true = anything other than 0)
 
 
     FLOAT
@@ -139,7 +140,7 @@ Constant, Volatile:
     CHAR (character, 8bits)
     ASCII as a byte. Can be used as an integer...
 
-    STRINGS
+STRINGS
     Not native to C++
     Arrays of characters (char type), terminated with value 0 (null character)
     std library has it as a Class: <string> header includes the class and functions to manipulate the Class/data.
@@ -148,11 +149,17 @@ Constant, Volatile:
     String class should be used instead of character arrays... but if code NEEDS to be compatible w/ C, then we can use character arrays and import the <cstring> library to get the functions to achieve the same results as the C++ <string> header offers for its string class.
 
 
-    POINTERS
+
+POINTERS
         Data type for memory addresses. System architecture (32bit, 64bit, 96bit) dictates maximum memory size of the pointer, ie. the full precision that data could ever be located at. Pointers will use X Bytes, depending on what they need to contain.
         (The content of a pointer is an Address)
 
         Declaring a pointer only allocates memory for the address, not for what's pointed to.
+
+        Pointers are a type of iterator. 
+
+        VOID
+            Pointer of any type. Must be cast to another pointer type before.
 
         NULL and nullptr
             NULL = legacy, constant doesn't point to a valid address. Integer value 0 (bad type safety)
@@ -204,7 +211,7 @@ Constant, Volatile:
         ptrname = &a; (& == Address Of)
         
 
-        *ptrName will return whatever is contained at the "pointed" address, in this ex., the value of a.
+        *ptrName will return whatever is contained at the "pointed" address, in this ex., the value of a. Or in other words, a REFERENCE to a.
 
     Addresses will look like "0x7fffffffffde40"
         MAIN USE OF POINTERS : DYNAMIC MEMORY MANAGEMENT
@@ -225,11 +232,15 @@ Constant, Volatile:
             (*ptr).member() OR ptr->member()
 
         However, messy if trees and lists... Dedicated OPERATOR - MEMBER OF POINTER ->
-        DESTRUCTOR
+        DESTRUCTOR (part of CLASSES)
             delete varName;
             This keyword calls the destructor function of a class and removes it from memory.
             Overloading the destructor:
                 ~className(args....)
+
+
+            Base Class Destructors are ALWAYS called (thanks, compiler) during object destruction
+
         SMART POINTERS
         To prevent "dangling pointers" and memory leaks.
 
@@ -242,29 +253,55 @@ Constant, Volatile:
         POINTERS TO ARRAYS 
             int (*) 32 //Type "pointer to an array of 32 integers"
 
-    REFERENCES https://learn.microsoft.com/en-us/cpp/cpp/references-cpp?view=msvc-170 
+REFERENCES https://learn.microsoft.com/en-us/cpp/cpp/references-cpp?view=msvc-170 
     type& name = memberToReference
-    Stores the address of an object, similar to pointers.
+    Declares a named variable as a reference, that is, an alias to an already-existing object or function or named memory address (AKA Variable)
 
-    When created, they are of "reference type". They decay to their referenced type when used.
-        lvalue - Named variable
-        rvalue - temporary objects (&&: rvalue or universal ref based on context. Universal ref = lvalue)
+    Both Refs and Pointers store memory addresses.
+    However, references act as the value contained at the address. Pointers act as addresses, which can be modified by anything that deals with addresses (iterator stuff, incrementing, decrementing)
 
+    Initialization BINDS the address of an object to a reference. 2 types:   
+        & lvalue - Locator Value, aka "expression refering to a memory location". Read&Write Alias : named references a Named variable
+        && rvalue - Read-only Values. Used to extend lifetime of temporary objects or values without a specific memory address (temp or movable values)
+                Temp objects: used to calculate and return data, then destroyed. (&&: rvalue or universal ref based on context. Universal ref = lvalue)
+                Can be used to init lvalues
+            Subcategories: 
+                    Prvalues (Pure rvalues)
+                        Literals: 5, "hello"
+                        Function calls returning non-references: int getValue()
+                        Temporary objects: std::string("temp")
+                    XValues (Expiring values)
+                    Expressions that represent objects that are about to be destroyed, allowing their resources to be reused.
+                        Function calls returning rvalue references: std::string&& getString()
+                        The result of std::move() - Used to transfer resources from 1 object to another to reduce copying. Converts lvalue to xvalue (triggering specific "move constructors" and "move assignment operators"  
+            Glvalues (Generalized lvalues)
+                Set of lvalues and xvalues: they have an identity (location in memory) 
+
+            int main() {
+            std::string name = "John"; // name is an lvalue
+            std::string&& temp = std::move(name); // temp is an xvalue
+            std::string otherName = std::move(temp); // otherName receives name's resources efficiently
+            }
+
+
+
+
+    When created, they are of "reference type". They decay to their referenceD type (int, float, wtvr) when used.
     Simple rewiring of tokens
         Not Pointers, nor objects(no array of ref bc no address)
         Cannot be used as addresses, only syntactically like objects.
-        Always initialized (guarantee of finding data) (not according to CPP ref)
+        Always initialized (guarantee of finding data)
         1 Ref = Alias to a single object (at declaration)
         Single level of indirection, ever.
 
-        USAGE OF REFERENCES:
+    USAGE OF REFERENCES:
         Passing parameters by ref (instead of by value)
-            Allows modifying the argument variable directly within the function
-        Avoiding Copies. Function parameters are typically copied. If large object, you do not want to unnecessarily copy it. 
+            Allows modifying the argument variable directly within the function. (Bypassing limits of scope)
+        Avoiding COPIES. Function parameters are typically (read: by default) copied. If large object, you do not want to unnecessarily copy it. 
         Optimizing ForLoops by avoiding copies each iteration.
             A form of for loop uses variable to iterate through a container. This variable MAY require copy each iteration.
 
-    STD (STL: standard template library) VECTORS (instead of ARRAYS)
+VECTORS - STD (STL: standard template library, <vector>) (alternative for ARRAYS)
     Dynamic Size
     Memory-managed (unless objects within vector are manually allocated)
     Template - Generic container class (can implement for any type of element)
@@ -272,18 +309,51 @@ Constant, Volatile:
         Part of C++ STD library (generic programming style?)
         Iterators can be used (container): vectorName.begin() // iterator to the first element. .end() last element+1. Can do (instance.end()-1)->memberFunctionName, or prev(iterator, positionsToMoveBack
         Template<type>    
-    Consecutive in Memory: Can only add items from the back end (furthest)
+
+    Consecutive in Memory: 
+        Can access with []
+
+        Can only add items from the back end (furthest)
+        .push_back()
         Indexed beginning at 0 : instance[2] returns the third element.
-        
-    Vector Header:
-        std::vector<type> vectorName;
-        vectorName.push_back() // To insert elements.
-        vectorName[index] = value // To set elements.
+
+        .size() How many elements
+        vectorVar.back() //Returns last element in the vector (NOT ITERATOR).
+        .front() // Returns first element.
+
+        .begin() //Returns Iterator: see below.
+        .end()
+        Can compare iterators (/pointers) like any other data types:
+            Can loop using .begin() and incrementing (++ or next(iterator,#) in a while loop using != .end()
+            Can loop using .size() and an integer
+
+        .erase(iteratorToObject)
+                auto it = find(begin,end, item)
+                if (it != end)
+                    erase(it)
+
 
 ITERATORS
     Used to traverse containers.
-    Work like pointers (addresses); use the same Operators, such as ->
+    Work like pointers (addresses); use the same Operators, such as -> and *.
+    "A pointer is the most basic form of an iterator, or conversely iterators are a generalization on the concept of a pointer."
+
     Can be incremented or decremented to move within a given container. +1 == next element in container. Incrementing a pointer is NOT the same thing: next element in memory, not only in container.
+
+    Can use auto to determine type. Otherwise, vector<type>::iterator is the type for vector iterators.
+
+    Dereferencing Iterators gives a reference (exactly like a pointer)
+
+    Some classes, like Vectors, have functions that return iterators:
+        vectorVar.begin() //Iterator to 1st element
+        vectorVar.end() // Iterator to element AFTER last element.
+        prev(iterator, number of elements to move) //Moving in the iterator, left/right 
+
+        vectorVar.begin()->memberName //Content of the member through an operator, exactly like a pointer. 
+        vectorVar.end()-1 //Iterator to last element of vector.
+
+        .rbegin //Iterates in reverse order
+        .rend
 
 DECAY
     Decay refers to the process of converting certain types into simpler ones when passed as function arguments or used in other contexts.
@@ -426,8 +496,8 @@ CONSTANTS
 
             Can set const on FUNCTIONS, VARIABLES and ARGUMENTS
                 FUNC: void printMoney(float amount) const{printf(amount)} //Nothing in the function can be modified.
-                VAR: const int maxHealth = 100;
-                ARG: void displayScore(const std::string& playerName) //Guarantees function won't modify the player's name.
+                VAR: const int maxHealth = 100; //Nothing can change this variable
+                ARG: void displayScore(const std::string& playerName) //Guarantees function won't modify the parameter, aka player's name.
 
                 USE CASES
                 Ensuring that a (getter) function will not modify its arguments or other aspects of the object.
@@ -498,20 +568,26 @@ CONSTANTS
 DECLARATIONS can be done anywhere in the code, not all at the beginning. Hurray for modernity.
 
 OPERATOR OVERLOADING
-Redefining the operation to support combinations of inputs.
-+ operator : works for integers as addition, but for strings it means concatenation.
+https://en.cppreference.com/w/cpp/language/operators 
+    Redefining the operation to support combinations of inputs.
+    + operator : works for integers as addition, but for strings it means concatenation.
 
-For a quotient (x/y), int (5/9) == 0, but if either is a float or double, the output will change. 
-Expressions change their size automatically to the largest value present in them.
-((float)5/9) will result in an expression of type Float, where (5/9.0) will result in an expression of type Double.
-The output of the expression can constrain the output; (5/9.0) output in an Integer will result in 0, despite the expression resulting in 0.555555...
+    For a quotient (x/y), int (5/9) == 0, but if either is a float or double, the output will change. 
+    Expressions change their size automatically to the largest value present in them.
+    ((float)5/9) will result in an expression of type Float, where (5/9.0) will result in an expression of type Double.
+    The output of the expression can constrain the output; (5/9.0) output in an Integer will result in 0, despite the expression resulting in 0.555555...
 
-    To declare an overload: declare multiple functions with:
-    Same Name
-    Different Parameters (dissociation based on params/arguments type or number)
-    Same Scope (class or namespace, otherwise both can exist and be called manually with different scope resolution ::
-
-
+    SYNTAX:
+    Think of the operator: does it return something? (Ex: +=)
+        returnType operatorOPERATORSYMBOL(args)
+            Inventory& operator+=(const type& item) //Const used to garantee the input value isn't changed. 
+            //From C++Ref https://en.cppreference.com/w/cpp/language/copy_assignment :
+            //A copy assignment operator is a non-template non-static member function with the name operator= that can be called with an argument of the same class type and copies the content of the argument without mutating the argument.
+            // Without Mutating the argument -> Const. See CPP REF : operators Canonical implementations
+            // By ref: Does not COPY argument on the stack (not wasting memory/operating for no reason) 
+                items->push_back(item);
+                return *this
+        Can return *this when dealing with modified objects' references.
 ASSIGNMENTS
 Line of code that assigns value to a variable.
 Left hand must be able to hold a value, right-hand side is an expression.
@@ -527,14 +603,22 @@ Modular, Procedural blocks of code
 Return a value
 Receive arguments
     Arguments VS Parameters
-    Arguments  = vars or constants sent to the function when called: add(3,5)
-    Parameters = the variables in functions that take values of their arguments: int add(int a, int b)
+    Arguments  = vars or constants sent to the function when called: add(a,b) // a and b
+    Parameters = the variables in functions that take values of their arguments: int add(int a, int b) // a and b
 Global or Members of a class (methods, in Java or Python)
 
 No keyword! Same as a variable, but with parameters:
 outputType functionName(parameters)
 
-Specific Functions:
+    FUNCTION SIGNATURE
+    What defines a function. Not just its name:
+    Name + Parameter Types.
+        return type IS NOT part of signature 
+    A function's SIGNATURE is what has to be unique when defining a function within a scope.
+    This is what you define by DECLARING a function.
+        Also why you can declare a function without giving names to the parameters.
+
+Specific Functions: Main uses Command Line arguments!
 int main(commandlineArguments){ 
     functionBody
 };
@@ -542,7 +626,7 @@ The main function can receive nothing, or STRINGS coming from command line (thin
 
     FUNCTION PROTOTYPES
     When declaring a function, can set its parameters' type, return type and function name only. 
-    Informs the compiler about the function.
+    Informs the compiler about the function's PARAMS + RETURN TYPE
     No need to set the parameters' NAMES. (typically .h file)
         EX: void add_student(int, std::string)
     They need to be defined in the function's PROCEDURE (implementation)(typically cpp file, or after the declaration)
@@ -571,7 +655,58 @@ The main function can receive nothing, or STRINGS coming from command line (thin
         //No special naming for this, as refs are aliases to the original variables.
         funcName(a,b);
 
-VIRTUAL FUNCTIONS
+    FUNCTIONS RETURNING POINTERS
+        All functions that create a new dynamic object must return a pointer - it's the only way to access the new object!
+        The return type should be a pointer.
+            Weapon* createWeapon(const std::string& name){
+                Weapon* weapon_x = new Weapon(name);
+                return weapon_x;
+            }
+    FUNCTIONS RETURNING REFERENCES
+    Useful to return existing objects (after sorting or seeking). Guarantees object is the expected one at the address - can't have refs pointing to something else.
+        Player& findTopScorer(std::vector<Player>& players){ //function return a ref to a Player, using a reference to a vector(array) of Players. "players" is the argument.
+            auto topScorer = players.begin(); //ITERATOR
+            //code to find top scorer
+            topScorer = &player; //references are addresses.
+            return *topScorer; //Dereferencing operator on iterator
+        }             
+
+    FUNCTION OVERLOADING
+        Same name, different parameters and/or return types.
+        Declare it again, with different params.
+        You CAN call another (instance?) of the same overloaded function: 
+            "CalculateScore(int, double)" can call "CalculateScore(int,int)" to simplify its implementation.
+        Same Scope (class or namespace, otherwise both can exist and be called manually with different scope resolution ::
+
+
+    DEFAULT ARGUMENTS
+        After adding an argument, assign a value. returnType functionName(type name = nameArgDefault)
+            Once a default value is provided, all parameters to the right must also have default values. Can't skip arguments when calling.
+            All mandatory arguments (no defaults) on the left.
+            In the Declaration, not Definition.
+            Reduces need for overloading! All combos of default arguments don't need to be declared as overloads.
+            Backward compatibility: When modifying existing functions, default arguments can be used to add new parameters without breaking existing code that relies on the original function signature.
+
+    VIRTUAL FUNCTIONS
+    Member function that you expect to be redefined in derived classes.
+    Makes it so a call to either the derived or base class invokes the derived class' definition.
+    NonVirtual -> based on the ref/pointer type.
+
+    ABSTRACT CLASSES
+    Concepts off of which more specific classes can be derived. No objects of abstract classes can be created.
+    As soon as a pure virtual function is created, it's an abstract class.
+    "Pure" virtual functions:
+        SYNTAX: "= 0"
+            virtual returnTYpe name(args) = 0;
+    
+    No variables or member data.
+    Not as argument types.
+    Not as function return types.
+    Not as explicit conversion types.
+
+    Constructor cannot call pure virtual functions (Undefined), but can call other member functions as normal.
+    Base Class Destructors are ALWAYS called (thanks, compiler) during object destruction, so defining even a pure virtual destructor is both mandatory and helpful.
+
 
 
 EXPRESSIONS
