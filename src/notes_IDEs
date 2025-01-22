@@ -1,0 +1,24 @@
+FONT LIGATURE
+Joins two characters as one -> becomes an actual arrow
+
+LIBRARIES used by C++ Functional Programming Course:
+    BOOST www.boost.org
+    RXCpp github.com/ReactiveX/RxCpp
+    CATCH2 github.com/catchorg/Catch2
+        Header-only unit test framework. Add to CPP project.
+        #define CATCH_CONFIG_MAIN //Triggers catch2 to create a "main" func
+        #include "catch.hpp"
+        TEST_CASE("Function test", "[functionName]"){ //Macro for a function in catch2
+            REQUIRE(functionName(inputValuesArgs) = expectedValue); //one test
+            ... //all test cases
+        }
+
+BUILDING AN APP FROM VISUAL STUDIO
+RMB on main.cpp, Open in Terminal.
+$compilerName /*clang, g++...*/ -std=cppversion /*c++11, c++17*/ -Wall /*all warnings*/ main.cpp //Execute this to compile.
+./a.out //default name for program, run this after it's compiled.
+
+
+CMAKE
+Compiler-independent build process tool
+set(CMAKE_CXX_STANDARD 17) //near top in cmake list.text file

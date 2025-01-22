@@ -611,7 +611,7 @@ No keyword! Same as a variable, but with parameters:
 outputType functionName(parameters)
 
     FUNCTION SIGNATURE
-    What defines a function. Not just its name:
+    What defines a function (its type). Not just its name:
     Name + Parameter Types.
         return type IS NOT part of signature 
     A function's SIGNATURE is what has to be unique when defining a function within a scope.
@@ -626,7 +626,7 @@ The main function can receive nothing, or STRINGS coming from command line (thin
 
     FUNCTION PROTOTYPES
     When declaring a function, can set its parameters' type, return type and function name only. 
-    Informs the compiler about the function's PARAMS + RETURN TYPE
+    Informs the compiler about the function's NAME + PARAMS (Signature) + RETURN TYPE
     No need to set the parameters' NAMES. (typically .h file)
         EX: void add_student(int, std::string)
     They need to be defined in the function's PROCEDURE (implementation)(typically cpp file, or after the declaration)
@@ -654,6 +654,7 @@ The main function can receive nothing, or STRINGS coming from command line (thin
         }
         //No special naming for this, as refs are aliases to the original variables.
         funcName(a,b);
+        Preserves polymorphic behavior (when not virtual)
 
     FUNCTIONS RETURNING POINTERS
         All functions that create a new dynamic object must return a pointer - it's the only way to access the new object!

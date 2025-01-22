@@ -152,7 +152,8 @@ Libraries contain header file(s) sharing a purpose.
 Example hierarchy:
 
 Standard Library  cppreference.com
-    Input/Output library
+    Input/Output library. Namespace == std.
+    All below are therefore accessed using std::
 
         
 
@@ -167,7 +168,7 @@ Standard Library  cppreference.com
             ::endl Newline character in the ouput. Produces a line immediately.
         <fstream> file stream (text files)
         Similar to cin object from iostream: the input is the text.
-            ::ifstream - class of the INPUT file stream
+            ::ifstream - class of the INPUT file stream (can create vars of type ifstream)
                 fileVar.open(string path, relative from same directory)
                 fileVar.close()
                     Closes document, emptying var as well
@@ -176,10 +177,12 @@ Standard Library  cppreference.com
                     Linked with getline to know if at eof.
 
                 fileVar.fail()
-                    Bool TRUE if file isnt' found.
+                    Bool TRUE if file isnt' found, or already open by another program.
 
                 getline(fileVar, str)
                     Returns next std:string line in the str variable.
+                FILE MODES: to define how file is handled.
+                ios::app (Append), ::in(Input, reading), ::out (output, writing)    
             ::ofstream - Class of the OUTPUT file stream
             ::ostream - Parent Class of output streams : cout, ofstream, etc. Can use it as argument(reference) to make a function that can output to any output stream.  std::cout can be passed as a parameter, or a file with ofstream...
         <cstdio> C (language) standard Input output
@@ -200,6 +203,13 @@ Standard Library  cppreference.com
                 max = sizeof(A) - strlen(A) - 1
         <algorithm> Sorting, searching, manipulating data
             ::find(iteratorStart,iteratorEnd, itemToFind), returns iterator to found element or element past last element(end() iterator)
+            std::transform(), replaces "map": 
+                Applies function/UnaryOperator/binaryOp to a range defined by 2 iterators. Outputs results at a 3rd iterator.
+                    unary_op = unary function object that outputs an iterator : must be dereferenceable & implicitly convertible to Type
+
+                    Used with back_inserter(value) instead of end() to work with empty containers: gets an iterator to the end of that empty container.
+            ::copy_if() , replaces "filter"
+                Similar to transform. Requires a collection to output. Instead of applying function to value, only adds it if the (unary_op)function returns TRUE. It inserts the element of the collection into the single argument of the function.
         <memory> Smart Pointers. ex: shared_ptr, unique_ptr
 
         <locale> Localization features
@@ -220,9 +230,26 @@ Standard Library  cppreference.com
         <complex> Complex numbers
             complex<varType>(real,imaginary)
                 Template, with constructor using REAL + IMAGINARY parts
+                Template definition operators < > can be problematic on older compilers when stacked:
+                    std::vector<std::complex<double>> varName //Here, a vector variable, of type complex number (double float). >> CAN be mistaken as right-shift insertion! (C++11 fixes it). Fix was to add space. > >          
+        
+        <numeric>
+            ::accumulate, Replaces "reduce"
+                Similar to ::transform(), but returns a single value instead of writing in another container.
+                (Begin iterator, end iter, type defaultValue, functionAppliedPerElement)
+        <ranges>
+            Functions dealing with ranges of addresses (used by contaienrs! Return iterators)
+            std::ranges::begin(), ::subrange
+            Made into a library so they can be used even on non-ranged collections (cstyle Arrays, std::array)
+            ::to<containerType>()
+                Convert container to another type (ex: Array to Vector)
 
-    Template definition operators < > can be problematic on older compilers when stacked:
-        std::vector<std::complex<double>> varName //Here, a vector variable, of type complex number (double float). >> CAN be mistaken as right-shift insertion! (C++11 fixes it). Fix was to add space. > >          
+        <functional> To manipulate functions and their parameters. 
+            std::bind(&funcRef, argsN, ...) 
+                Generates a function object.
+            std::placeholders::_N //(1,2,3...) Used as an argument in std::bind. Placeholder is stored in func object as if declared with "extern" keyword (linked globally). _N replaces the Nth element when a function is called with UNBOUND ARGUMENTS. 
+            std::function - Wrapper for invokable objects (that can be called like a function): functions, functors, lambdas. Can store funcs in objects (like vectors). Tells the program " you can interact with this thing as you would with a function " (Interface)
+
 STL COMPONENTS
     CONTAINERS
     std:: vector, list, map
@@ -390,12 +417,14 @@ do/while loop:
         Initializing settings, displaying a menu
 
 
-while (condition){//code}
+while loop 
+    while(condition){//code}
     If condition is immediately false, then it won't run at all. (see do/while) (Evaluates, then does the body if TRUE)
 
     Can use pointers/iterators to loop through all elements of a vector.
     vector.begin() = iterator pointing at first element
     vector.end() = pointer past the last element
+    next() = RETURNS the next pointer (you must assign it if iterating through container!!)
 
     auto pointer = vector.begin();
     while(pointer != vector.end()){
@@ -413,7 +442,8 @@ while (condition){//code}
     }
 
 
-for ()
+for loop 
+    for()
     When you know the range in advance. Can also use a while loop.
 
     for(initialization; condition; increment){
@@ -428,11 +458,14 @@ for ()
     }
                     Also called (elementVariable : sequence)
 
+    Non-Ranged Collections: Do not support the <ranges> C++20 library (.begin(),.end())
+        c-style Arrays
+        std::array
+    Must specify namespace of begin/end functions to call them (std::ranges::begin(), ::subrange
 
 
 
-
-GENERIC PROGRAMMING
+GENERIC PROGRAMMING STYLE
 Reusable code where dataTypes are NOT specified - the instance defines the data type. 
 "Compile-Time Polymorphism": 
 Data types specified at var definition OR object instantiation -> Polymorphism resolved at compile time.
@@ -475,8 +508,12 @@ Implicit conversions are applied unless "explicit" keyword used before Construct
             int y = static_cast<int>(obj);  //Only works because of Operator overload
             }
 
+
+
+
 STL : STANDARD TEMPLATE LIBRARY
 Library of templates, typically included in Standard Library (STD).
+
 
 4 COMPONENTS
     CONTAINERS: store collections (array-like) of data (vectors, stacks, queues)
@@ -513,6 +550,8 @@ Library of templates, typically included in Standard Library (STD).
             Priority Queues <queue>: Sorted order of elements.
                 std::priority_queue<type> ; .push() .top() .pop()
     
+                    FOR POP functions : make sure the container isn't empty (!container.empty()).
+
     Iterators: objects similar to pointers to traverse containers efficiently & manipulate them generically
         Templates at their core.
         Iterators are addresses, and can therefore be dereferenced like pointers. 
@@ -582,6 +621,12 @@ Library of templates, typically included in Standard Library (STD).
         return 0;
     }
 
+    //The simplest functor: class that can be called with () operator.
+    class functor{
+    public:
+        void operator()() const{
+        }
+    };
 
         USE CASES
         Keeping a state
@@ -606,3 +651,98 @@ Library of templates, typically included in Standard Library (STD).
     USE CASES
     One-Off operations, arguments to algorithms. Avoids having to define function with a name outside of its intended use-case (makes it easier to know that the function is for that one line only)
     Local Scope operations
+
+EXCEPTION HANDLING
+Exceptions caught by these statements interrupts flow of the program to execute code within those blocks.
+
+try{} //Contains statement that could throw an exception
+catch(const exception_type& var){} //Code that handles the exception thrown by Try. Use refs!
+
+throw exception_type("String to explain exception") //Statement to signal occurence of exception.
+    EX: throw std::invalid_argument("Division by zero is not allowed."); //the string will be returned by .what()
+    Try{}/Catch(){} must still be used to catch it!
+
+.what() //Member func, displays string based on exception declaration. Typically used with the catch's var and inserted into std::cerr, object used to display error strings on the console. 
+    EXCEPTION TYPES
+    std::runtime_error : files not found, 
+    std::invalid_argument : Dividing by 0
+    std::out_of_range : [2] on an array with <3 elements
+
+    BEST PRACTICE
+    Make sure to release resources if Exception occurs.
+    RAII principles (Resource Acquisition Is Initialization), Smart Pointers to help.
+
+
+
+FUNCTIONAL PROGRAMMING STYLE
+C++ is NOT a functional programming language, so this is a style. (guidelines)
+
+Immutable vars (supports multithreading)
+Recursion prefered over Loops (bc vars are immutable!)
+Functions: Pure and simple (Outputs depend STRICTLY on their Inputs. No side-effects bc they do not modify state of the program.)
+    STATE: External Resources, open Files, stack, heap, values of variables, location in program's code that's being executed AKA Program Counter
+Simple debugging/testing
+Expressions preferred over statements (return values) (statements return nothing, used for side effects)
+Currying: manages how args are passed to functions
+    CURRYING:
+    Partial Applications: 
+
+    C++17 FEATURE: NESTED NAME SPACES
+    namespace A::B::C {
+        int i;
+    }
+    int main(){
+        A::B::C::i = 42;
+        //print value in cout
+        return 0
+    }
+
+
+
+    PREDICATE
+        An UNARY function that returns a BOOL value.
+
+    _BoundArgs: input arguments of a function.
+
+    WRAPPING
+        Class template
+        "Wraps" a reference , binding together the data + Functions to manipulate data (AKA Encapsulation)
+
+
+    BINDING & PARTIAL APPLICATION
+        std::bind, <functional> header
+        Creates a new function, less arguments, from another one.
+        ARITY : # of arguments(operands) a function accepts. AKA Unary, Binary, Ternary.
+
+        Can partially apply functions, reorder their arguments & bind values to arbitrary arguments.
+
+        Ie. Can reduce a functions Arity from binary (two arguments) to unary (1 arg) when a predicate (see above) is needed.
+
+        Non-Functional Programming: 
+        EX:Iterating over vector of values, incrementing results.
+            "Over 21" - how many numbers over 21. vector, int over21 = 0, increment it in a for-loop.
+
+        Functional equivalent:
+            auto num_over21 = std::count_if(vector.begin(), vector.end(), std::bind(&funcGreaterThan, std::placeholders::_1, 21));
+            //Binds a binary function, greaterThan, to an unary function object, using its single argument as its 1st, and 21 as its 2nd argument.
+
+        std::function
+            std::vector<std::function<returnObject(args)>> varName;
+                std::vector<std::function<void()>>  funcs;//returns void from the invokables that this vector takes. Must match input types... but can bind that issue away.
+                    funcs.push_back(invokableThatReturnsVoid)
+
+LAMBDAS
+    Unnamed function Object 
+    Creates a closure over calling scope 
+        CLOSURE - any func that closes over environment in which it was defined (as opposed to ONLY its own calling block). 
+            CAPTURES - the act of taking those variables in. 
+    When compiler goes over a Lambda, it converts it as an anonymous "closure object", AKA a Closure.
+        As if defining a class that fetches data from a scope and stores it, letting itself access the data after being instanced. 
+
+    Class -> Instance of a Class (Objects) 
+    Lambda -> Closure
+    // Code-Only -> Runtime
+    //Classes & Lambdas = Code Memory
+    //Objects & Closures = Data Memory
+
+    mutable keyword - can be used to make changes to Closure.
