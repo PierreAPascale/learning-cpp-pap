@@ -3,6 +3,12 @@ Joins two characters as one -> becomes an actual arrow
 
 LIBRARIES used by C++ Functional Programming Course:
     BOOST www.boost.org
+        Boost.mpl: Header Only, C++ O3 base, general purpose functional programming  
+        Boost.fusion : Functional prog for Tuples (heterogeneous collections)
+        Boost.Hana : "Standard library for functional programming", superset of MPL and Fusion.
+            #include <boost/hana.hpp>
+            
+        Boost.HigherOrderFunctions : c++11 & 14, utility funcs and functors
     RXCpp github.com/ReactiveX/RxCpp
     CATCH2 github.com/catchorg/Catch2
         Header-only unit test framework. Add to CPP project.
@@ -13,12 +19,49 @@ LIBRARIES used by C++ Functional Programming Course:
             ... //all test cases
         }
 
+
+
 BUILDING AN APP FROM VISUAL STUDIO
-RMB on main.cpp, Open in Terminal.
-$compilerName /*clang, g++...*/ -std=cppversion /*c++11, c++17*/ -Wall /*all warnings*/ main.cpp //Execute this to compile.
+MSVC/MinGW - Windows
+Clang - MAC OS
+GCC - Linux
+
+RMB on main.cpp, Open in Terminal. Command Line!
+
+$compilerName /*clang, g++...*/ -std=cppversion /*c++11, c++17*/ -Wall /*all reasonable warnings*/ main.cpp //Execute this to compile.
+
+ls //After building to list all files in directory (should tell you name of compiled files too)
+
 ./a.out //default name for program, run this after it's compiled.
 
+-Wextra //extra warnings
+-Wpedantic //harsh application of C++ standards
+-Wunused //unused type defs
+    CHECK COMPILER WEBSITE FOR COMPILER-SPECIFIC ONES
+
+
+
+STATIC ANALYZERS
+Checks code for issues!
+Eclipse and Visual Studio have built-in tools + plugins
+Cppcheck - open source, + correct use of STL
+    -Runs from command line
+    -Array overrun, memory + resource leaks, unused vars, etc.
+    cppcheck --enable=all ./*.cpp //All files in directory with cpp extension      */
+Clang - included with compiler 
+Coverity
+IKOS - analyzer from NASA
 
 CMAKE
 Compiler-independent build process tool
 set(CMAKE_CXX_STANDARD 17) //near top in cmake list.text file
+
+
+C++ Versions:
+11 - lambdas, auto type deduction, list initialization, smart pointers, move semantics
+14 - return type deduction, binary literals, generic lambdas
+17 - structured binding, nested namespaces, inline vars, constexpr lambdas
+
+
+BOOKS!
+Modern C++ Design by Andrei Alexandrescu

@@ -4,7 +4,8 @@ File Types:
 IMPLEMENTATION files. This is where the logic of your code resides. It is never included by other implementation files.
 Must be compiled (into Assembly then Object files)
 
-.h
+
+.h (ISO) OR .hpp (Boost)
 HEADER files. This is where declarations (Classes, members, functions) are written, without implementation. "Just the tokens".
 
 Important: Headers must only be compiled once to avoid multiple definitions (they are included in CPP files; we do not want the Include to copy/paste them multiple times. Multiple Defs.)

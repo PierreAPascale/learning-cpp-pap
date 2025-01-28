@@ -38,7 +38,7 @@ Each instance = an object of the class (can have 3 car objects)
         So common in constructors there's a shorthand:
         MEMBER INITIALIZATION LIST
         className(args): memberName(value), memberName2(value2) {} //Requires different names for member and argument (_i for initializer is common)
-
+            
     DESTRUCTORS
     Function to define how an object is destroyed.
     Declaration: ~className();
@@ -405,6 +405,7 @@ FLOW CONTROL
 if (condition){//code)}
 
 do/while loop:
+BEFORE IMPLEMENTING : CHECK IF ALGORITHM CAN DO IT.
     MUST ensure the loop can succesfully runs at least once (it is run once regardless) (Does the body, then evaluates.)
     Example iterating through elements of a  vector by index:
     i=0
@@ -418,6 +419,7 @@ do/while loop:
 
 
 while loop 
+BEFORE IMPLEMENTING : CHECK IF ALGORITHM CAN DO IT.
     while(condition){//code}
     If condition is immediately false, then it won't run at all. (see do/while) (Evaluates, then does the body if TRUE)
 
@@ -443,6 +445,7 @@ while loop
 
 
 for loop 
+BEFORE IMPLEMENTING : CHECK IF ALGORITHM CAN DO IT.
     for()
     When you know the range in advance. Can also use a while loop.
 
@@ -457,12 +460,27 @@ for loop
         //code
     }
                     Also called (elementVariable : sequence)
+    Supports initializer_list as type for 2nd argument! for (int n : {1,2,3,6}){} //valid
+    Strings are collections.
+    Can work with Maps to print all values
+
 
     Non-Ranged Collections: Do not support the <ranges> C++20 library (.begin(),.end())
         c-style Arrays
         std::array
     Must specify namespace of begin/end functions to call them (std::ranges::begin(), ::subrange
-
+        
+    For each loop
+    std::for_each(iterator_start, iterator_end, unary function reference)
+        void print_this(const int &n){ std::cout << "-" << n;}
+        //main
+        std::vector<int> nums{3,4,2,8,15};
+        std::for_each(nums.begin(), nums.end(), std::bind(&print_it, std::placeholders::_1));
+        //OR PREFERABLY (if used once)
+        std::for_each(nums.begin(), nums.end(), [](const int &n){std::cout<<"-"<<n;});
+        //OR PREFERABLY (if used multiple times)
+        auto myFunc = [](const int &n){std::cout<<"-"<<n;};
+        std::for_each(nums.begin(), nums.end(),myFunc);
 
 
 GENERIC PROGRAMMING STYLE
@@ -475,7 +493,7 @@ CLASS TEMPLATES <Type>
 Constructs that take on a type at compile time, instead of being specified.
 
 SYNTAX: 
-template<typename T> //both template & typename are keywords. T is now a placeholder type: Whatever variably it's given, "a" in the example below, it'll take on the corresponding type, automatically. Compiler handles the variants needed.
+template<typename T> //both template and typename are keywords. T is now a placeholder type: Whatever variably it's given, "a" in the example below, it'll take on the corresponding type, automatically. Compiler handles the variants needed.
 
 int size_in_bits(T a) {
     return sizeof(a)*8;
@@ -484,6 +502,10 @@ int size_in_bits(T a) {
 size_in_bits(21)
 size_in_bits('f')
 size_in_bits(2.0f)
+
+
+std::vector a; //Does not work - what type of data does the vector contain? Not a type by itself.
+std::vector<int> a; //Correct declaration.
 
 Templates can be used in class Constructors to make input types versatile without rewriting code.
 Data members must also be of "template type".
@@ -494,7 +516,8 @@ Implicit conversions are applied unless "explicit" keyword used before Construct
         struct MyClass{
 
             MyClass(int val):value(val){} //Constructor
-            // Conversion operator in MyClass 
+
+            // Conversion operator in MyClass : Overloads implicit and explicit conversions to integer
             operator int() const {
                 return value;
             }
@@ -511,9 +534,18 @@ Implicit conversions are applied unless "explicit" keyword used before Construct
 
 
 
+INTERFACES
+An interface is "a promise to implement a function". A class can implement an interface. A function allows to check if a given class implements an interface.
+    ITERATORS
+    Iterator interface - supporting it can let you work with iterators for your own data types (range-based for loops, algorithms)
+
 STL : STANDARD TEMPLATE LIBRARY
 Library of templates, typically included in Standard Library (STD).
 
+ALWAYS USE FUNCTION IF IT EXISTS.
+for loops that simply increment a variable? std::accumulate()
+filtering? std::copy_if
+modifying the entire array with a function? ::transform()
 
 4 COMPONENTS
     CONTAINERS: store collections (array-like) of data (vectors, stacks, queues)
@@ -552,7 +584,8 @@ Library of templates, typically included in Standard Library (STD).
     
                     FOR POP functions : make sure the container isn't empty (!container.empty()).
 
-    Iterators: objects similar to pointers to traverse containers efficiently & manipulate them generically
+    ITERATORS
+    Objects similar to pointers to traverse containers efficiently and manipulate them generically
         Templates at their core.
         Iterators are addresses, and can therefore be dereferenced like pointers. 
         POINTERS VS ITERATORS : Subset and Superset
@@ -567,13 +600,13 @@ Library of templates, typically included in Standard Library (STD).
                 Output - Write one-way, one-pass
                     Uses: output streams, writing to write-only files
                 Forward - Read/Write one-way, multi-pass
-                    Read&Write = Mutable (writing specifically)
+                    Read/Write = Mutable (writing specifically)
                     Only moves forward
                     Multi-Pass
                     Uses: Singly-Linked List. By linked, means they have information necessary to move to the next element.
                     forward_list, unordered_[multi]set, unordered_[multi]map 
                 Bidirectional
-                    Forward, + Forward&Backward traversal (doubly-linked list). 
+                    Forward, + Forward/Backward traversal (doubly-linked list). 
                     Uses:
                     list, [multi]set, [multi]map
                 Random Access
@@ -587,7 +620,7 @@ Library of templates, typically included in Standard Library (STD).
             .rbegin() : reverse iterator to the last element of the container (first of the REVERSE container) (not impl. in Forward iterators)
             .rend() : iterator to the reverse end of the container (element right BEFORE first element) (not impl. in Forward iterators)
     Algorithms: <algorithm> search, sort, modify, count
-        sort(iterator to starting element, iterator to end element, (opt) bool ) //Start & End are arguments, you can sort PART of a container. Iterators already point to a container, a memory space, so no need to pass the Container as argument!
+        sort(iterator to starting element, iterator to end element, (opt) bool ) //Start and End are arguments, you can sort PART of a container. Iterators already point to a container, a memory space, so no need to pass the Container as argument!
             Default Sort: STD::Less (C++20)
             Sorting w/the reverse iterator = inverting the Sort
             Sorting w/ a 3rd parameter : functor, resulting in bool. If true, evaluated data takes the slot (using "greater<int>" would sort from highest to lowest, because it checks if 1st element is higher than 2nd. 
@@ -596,7 +629,7 @@ Library of templates, typically included in Standard Library (STD).
         count(start iterator, end iterator, value to count)
 
 
-    Functor(Function Objects): <functional> Overload parentheses, they maintain states & can be parametrized
+    Functor(Function Objects): <functional> Overload parentheses, they maintain states and can be parametrized
     Objects that can be used as if functions, by using ().
         Overloading () operator!
     They are objects (instances of classes), so they can hold data (maintain states)
@@ -641,7 +674,7 @@ Library of templates, typically included in Standard Library (STD).
         All variables can be captured using:
         By Value : [=] All variables. [varName] A specific Variable. 
         By Ref : [&] All variables used  
-        With Initilaizer [ a = expression ]
+        With Initializer [ a = expression ]
         List : [ a, b]
          
          https://www.learncpp.com/cpp-tutorial/lambda-captures/
@@ -704,18 +737,15 @@ Currying: manages how args are passed to functions
 
     _BoundArgs: input arguments of a function.
 
-    WRAPPING
-        Class template
-        "Wraps" a reference , binding together the data + Functions to manipulate data (AKA Encapsulation)
 
 
     BINDING & PARTIAL APPLICATION
         std::bind, <functional> header
-        Creates a new function, less arguments, from another one.
+        Creates a new function, less arguments, from another one, by "binding" (attaching, setting) values for all but one of its arguments.
         ARITY : # of arguments(operands) a function accepts. AKA Unary, Binary, Ternary.
 
-        Can partially apply functions, reorder their arguments & bind values to arbitrary arguments.
-
+        PARTIAL APPLICATION: Fixing a number of arguments of a function.
+        Can partially apply functions, reorder their arguments and bind values to arbitrary arguments.
         Ie. Can reduce a functions Arity from binary (two arguments) to unary (1 arg) when a predicate (see above) is needed.
 
         Non-Functional Programming: 
@@ -723,12 +753,17 @@ Currying: manages how args are passed to functions
             "Over 21" - how many numbers over 21. vector, int over21 = 0, increment it in a for-loop.
 
         Functional equivalent:
+            bool greaterThan(int a, int b){ return a>b;} 
             auto num_over21 = std::count_if(vector.begin(), vector.end(), std::bind(&funcGreaterThan, std::placeholders::_1, 21));
+            
             //Binds a binary function, greaterThan, to an unary function object, using its single argument as its 1st, and 21 as its 2nd argument.
-
+    
+    WRAPPING
+        Class template
+        "Wraps" a reference , binding together the data + Functions to manipulate data (AKA Encapsulation)
         std::function
             std::vector<std::function<returnObject(args)>> varName;
-                std::vector<std::function<void()>>  funcs;//returns void from the invokables that this vector takes. Must match input types... but can bind that issue away.
+                std::vector<std::function<void()>>  funcs;//RETURN TYPE MATTERS, NOT ARG TYPES: returns void from the invokables that this vector takes. Must match input types... but can bind that issue away. 
                     funcs.push_back(invokableThatReturnsVoid)
 
 LAMBDAS
@@ -739,10 +774,186 @@ LAMBDAS
     When compiler goes over a Lambda, it converts it as an anonymous "closure object", AKA a Closure.
         As if defining a class that fetches data from a scope and stores it, letting itself access the data after being instanced. 
 
+    Prefer LAMBDA EXPRESSIONS over std::bind()
+
     Class -> Instance of a Class (Objects) 
     Lambda -> Closure
     // Code-Only -> Runtime
-    //Classes & Lambdas = Code Memory
-    //Objects & Closures = Data Memory
+    //Classes and Lambdas = Code Memory
+    //Objects and Closures = Data Memory
 
     mutable keyword - can be used to make changes to Closure.
+
+    CURRYING
+    Transformation of a function w/ Multiple Arguments into a sequence of Unary functions.
+    
+    nested lambda -> 
+    auto addCurry = [](auto a){
+        return [a](auto b){
+            return [a,b] (auto c){
+                return a+b+c;
+            };
+        };
+    };
+    By returning a CLOSURE (FUNCTOR), you can do a sequence of operations:
+    auto added1 = addCurry(1); //Returns the [a](auto b), closure which captured a (1).
+    auto added2 = added(2); //Returns the [a,b](auto c) closure, which captured both a(1) and b(2)
+    auto addResults = added2(3) //Returns a+b+c, totals 6
+
+    Can do them all in a single line as the order of operations just goes through 1 by 1:
+    auto allAtOnce = addCurry(10,20,30); //Returns 60
+
+    LAMBDA MUTABILITY
+    Lambdas' captured variables are, by default, const. This is to ensure they match whatever they captured!
+    Can break this using "mutable": []()mutable{}
+
+    This lets you nest lambdas:
+    auto incrementer = [](){
+        auto increment =0
+        return [increment]() mutable{ 
+            return increment++;
+        };
+    };
+
+    Here, the first CLOSURE is holding the "increment" var value. The 2nd closure "references" (captures) that value WHEN CALLED, and increments it.
+    Initialization is effectively done w/ the first Lambda, and implementation in the 2nd.
+
+
+    Lambdas & Switch (statements -> expression)
+        auto a = 0; //Could replace this with an enum
+        const auto myFunc = [&](){ //capture all variables at scope as references
+            switch(a){
+                case 0:
+                    return 5;
+                case 1:
+                    return 23;
+                default:
+                    return 1;
+            }
+        };
+
+
+VARIADIC TEMPLATE FUNCTIONS
+    C language initially
+    Functions with any number of parameters.
+    EX: Reverse Concatenation (recursive)
+        template<typename T> //The function overload that stops the recursivity
+        T rcatenate(T v) {
+            return v;
+        }
+
+        template<typename T, typename... Args> //typename ... Args means any number.
+        T rcatenate(T first, Args ... args){ // Args ... args == Parameter pack, or "the rest of the arguments". IMPORTANT: NO TYPE for ARGS!
+            return rcatenate(args ...) + " " + first; //When called, "first" receives first argument. Then called again, until it hits overload 
+                                                        w/ 1 parameter left.
+
+    Sets "template parameter packs", ie. independent combinations of typenames
+    Types can be different
+    REQUIRES a base case w/ 1 parameter.
+    Variadic functions exist, but prefer Variadic Template Functions.
+
+TEMPLATE METAPROGRAMMING (TMP) - Generic Programming Style?
+    Turing complete functional programming language built in C++
+    TMP Vars : Immutable
+    No Loops. Recursion instead.
+    No Branching. Specialization instead.
+    No Return statements.
+
+    Generic programming vs Template Metaprogramming:
+        template<typename T>
+        T cube(const T& value){
+            return value*value*value; //not modifying the value, only returning its cube
+        }
+        int value = cube(8);
+        //This cube function is instantiated & called at runtime.
+
+        template<dataType immutableName> //Template PARAMETER of a fixed type, instead of using typename for a flexible-type template. Typename == Class, no difference... a class can be used as a type.
+        struct Cube { //Class but public
+            enum { value = toCube*toCube*toCube //Why an enum? It is a STATIC value (1 instance of member, can be accessed without an object...bc computed at compile and allocates memory at program start)
+            };
+        };
+        int value = Cube<5>::value; //Creates a struct with a member value initialized at the cube of the input, at COMPILE TIME.
+
+        //This Cube function is reduced at Compile time.
+
+    Comprehension: Quand Template est utilise, dit a l'ordi "compile-moi une variante pour chaque utilisation differente".
+    Si Typename/Class, a chaque nouveau type requis par le code (int/float/personnage/bande-dessinee), cree une classe qui le supporte. 
+    Si type defini, pour chaque utilisation du template, compile moi sa valeur (devient une constante). ex: <int a> va creer des constantes avec chacune des utilisations.
+
+    Dans le cas d'une enum qui utilise la constante, une enum (variable statique) est creee pour chaque template: non seulement "a" cree des constantes, mais la struct qui en depend est compilee pour chaque variante. Dans le cas de "cube", le resultat de a*a*a est compile pour chaque a.
+    Declaration simple: la valeur de  l'enum est a*a*a
+    
+    Cas Recursif 1: Factorial
+        Une struct Factorial est definie par l'heritage d'un parent de type Factorial<template parameters>.
+        Pourquoi? Premiere Factorial est compilee: besoin d'un autre template. 2e est compilee, et ainsi de suite.
+        A chaque instance, l'operation sur les PARAMETRES est effectuee : Factorial<n-1,n*sum>
+            n-1 s'effectue a chaque template compile, jusqu'a ce que la specialization "1" soit atteinte. 5 devient 4, puis 3, 2, 1
+            n*sum est le resultat recherche - 5*4*3*2*1 ou chaque multiplication est un template subsequent.
+            Meme pas besoin de stocker de valeur! n s'en charge. 
+            Seule la specialization a besoin de stocker la valeur, qui est simplement "sum" 
+
+        Specialization est requise pour finir la recursion.
+
+    Cas recursif 2: Fibonacci<n>. La premiere structure compilee determine qu'elle a besoin de 2 autres Fibonacci, fibonacci(n-1) et fibonacci(n-2). 
+        Ici, la valeur stockee ne definit pas le prochain template.
+        Les instances recursives de Fibonacci sont definies dans la valeur elle-meme:
+            fibonacci<n-1> et fibonacci<n-2>
+        Le compilateur continue recursion jusqu'aux specializations, soit fibonacci<1> et <0>, pcq quand Fibonacci<2> est construit, il demande <1> et <0>. 
+        Eux retournent une valeur fixe, plutot qu'une nouvelle instance de Fibonacci. Toutes les instances de Fibonacci crees pour se rendre la peuvent donc etre calculees: 0+1, puis 1+1, puis 1+2, 2+3, 3+5, etc.
+
+    SPECIALIZATION
+    Templates are called similarly to function overloading: If a specific case exists, it takes priority over generic case.
+    
+    EX:
+    template<int input, int sum = 1> //Generic Case
+    struct Factorial : Factorial<input-1, input*sum>{
+    }; //Infinitely Recursive : Factorial calls itself forever.
+
+    //Solve the problem: SPECIALIZATION.
+    //Overloads of function templates. Replaces "if input == 1" by giving Factorial a different implementation when that input combination occurs.
+
+    template<int sum>
+    struct Factorial<1,sum>{ //Specific Case to exit recursion.
+        enum {
+            value = sum
+        };
+    };
+
+    REACTIVE EXTENSIONS
+    ReactiveX : combines observer and iterator patterns.
+    All major prog languages.
+
+    4 Keys:
+        Observables - Composable streams of events
+        Observers - Those interestred in events
+        Operators - Functions that manipulate Observables
+        Schedulers - Execute actions associated with operators.
+    
+    RxCpp - Header-only, C++ implementation of ReactiveX (clone from Github)
+        #include "../../RxCpp/Rx/v2/src/rxcpp/rx.hpp"
+        Tutorial used namespaces: 
+        namespace Rx {
+            rxcpp, rxcpp::sources, rxcpp::operators, rxcpp::util
+        }
+        using namespace Rx;
+        std::vector<int> ages{9,20,13,4,5,6,10,28,19,15,60,23,47,12,19,99};
+        auto values = rxcpp::observable<>::iterate(ages). //dot is for "chaining interface", or "fluent interface"
+         filter([](int age){return age >= 21;}). //Returns list of values over or equal to 21
+         count(). //Counts how many in list
+         subscribe( 
+            [](int count){std::cout << "Numbers over 21 = " << count << std::endl;},//for each event, the first method occurs
+            [](){std::cout << "OnCompleted" << std::endl;}//Method called when observable is complete. Returns OnError if it fails.
+         );
+
+        auto values2 = rxcpp::observable<>::iterate(ages). //dot is for "chaining interface", or "fluent interface"
+         filter([](int age){return age >=13 && age<=19;}). //Returns list of values between 13 and 19, inclusive.
+         subscribe(
+            [](int age){std::cout << "Number between 13 and 19 incl. = "  << age << std::endl;},//for each event, the first method occurs
+            [](){std::cout << "OnCompleted" << std::endl;}//Method called when observable is complete. Returns OnError if it fails.
+         );
+
+
+    STL Containers conversion to Observables
+    Chaining or Pipe Interface:
+        - .
+

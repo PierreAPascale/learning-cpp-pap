@@ -15,9 +15,15 @@ Can declare multiple at once using commas, initializing as needed:
     Characters: 'a', 'Z', '!'
     Strings: "Hello, world!", "This is a string"
     Boolean values: true, false
+    Lists:
+        INITIALIZER LIST
+        Lists have a dedicated type to support initialization: initializer_list.
+        Important for "auto", as this does not create a vector: 
+            auto a = {1,2,3}; //a is an initializer_list<int>, not a list!
+            auto b = std::vector<int>{1,2,3}; //This works to create a vector variable.
 
-        CONSTANTS : named values representing a fixed value (PI)
-        LITERAL : a fixed value (5)
+    CONSTANTS : named values representing a fixed value (PI)
+    LITERAL : a fixed value (5)
 
 COMMON DATA TYPE LIBRARIES : STRING STANDARD LIBRARY
     
@@ -72,6 +78,22 @@ COMMON DATA TYPE LIBRARIES : STRING STANDARD LIBRARY
         Requires <string> STL (Standard Template Library)
         "string"
         Their type is a Pointer to a Const Char : when using typeid, will return Pointer to char: PKc (Pointer P, K constant, c Char)
+
+    UNKNOWN!
+    When a type is not easily defined in code (functional programming), a specifier can be used to have C++ inspect the expression for the type.
+    decltype() - https://en.cppreference.com/w/cpp/language/decltype    
+        Can be used to have compiler check if a property exists:
+        hana::is_valid(
+            [](auto &&x) -> decltype((void) value){}
+        )
+        // Lambda Function: captures nothing, takes an rvalue as input. Return type is the result of decltype... 
+        // The value read is cast to void: suppresses warnings, this expression can return something but we do not care about it.
+        // This means the type will be based on wether or not it finds "value"
+        //SFINAE : "Substitution Failure Is Not An Error"
+
+        // https://stackoverflow.com/questions/13230480/what-is-the-meaning-of-a-variable-with-type-auto
+        By using auto&& var = <initializer> you are saying: I will accept any initializer regardless of whether it is an lvalue or rvalue expression and I will preserve its constness. This is typically used for forwarding (usually with T&&). The reason this works is because a forwarding reference, auto&& or T&&, will bind to anything.
+
 
 VARIABLE MEMORY
 
@@ -156,7 +178,8 @@ POINTERS
 
         Declaring a pointer only allocates memory for the address, not for what's pointed to.
 
-        Pointers are a type of iterator. 
+        Pointers are a type of iterator.
+        Pointers have a type based on what they're pointing to: Pointer-To-Int, Pointer-To-Baby, etc. 
 
         VOID
             Pointer of any type. Must be cast to another pointer type before.
@@ -169,16 +192,22 @@ POINTERS
                 Defined in header <cstddef>, std::nullptr_t
             Never dereference a null pointer.
 
+        SYNTAX
+            type* varName; // pointer-to-type, stored in variable varName. 
+            type qualifier* varName; // Non-const Pointer stored in variable varName. Points to a qualifier pointer (ex: const), which itself points to a non-qualified element of datatype type.
+
         POINTERS AND ARRAYS
         Array variables (and strings, as arrays of chars), are a contiguous block of memory. They are not pointers, BUT they "decay" into a pointer to their first element. Immutable, sizeof returns the total array size in bytes (pointers return the pointer's size)
         EX:
-        int arr[3] = {1, 2, 3};
+        int arr[3] = {1, 2, 3}; // Array of size 3.
         int *ptr = arr; // Pointer to the first element of the array. No need for & here.
         int *ptr = &arr[0] //equivalent line.
 
+        int (*ap)[2] = &arr; //pointer to a size-2 array of int
+
         Can move across arrays using the initial pointer: 
             *(ptr+1)  //doesn't change the pointer, but offsets address. ++ would've incremented. Compiler knows how many bytes to move to get to the next item.
-            ptr[1] //doesn't change the pointer, but lets us use the pointer as if it was an array itself.
+            ptr[1] //doesn't change the pointer, but lets us use the pointer as if it was the array itself ("decay").
             [] // This operator actually does this: SUBSCRIPT, offsetting the address and dereferencing it.
 
         POINTERS AND OBJECTS
@@ -204,14 +233,17 @@ POINTERS
     Can also be VOID or NULL to point to any function or object requiring these.
 
 
-        Symbols:
-        dataType *ptrname;  (* == Indirection operator; "consider this an indirection")
+    SYNTAX:
+        Dereferencing (Get data @ pointer address) : dataType *ptrname;  (* == Indirection operator; "consider this an indirection")
         "ptrname points to a" (colloquial)
+        Actual Terms: the unary operator* returns the lvalue expression ("left" value, AKA a value at a named memory space which can be put on the left side of an assignment... you can read & write (left-side) to a memory space.)
 
         ptrname = &a; (& == Address Of)
         
 
         *ptrName will return whatever is contained at the "pointed" address, in this ex., the value of a. Or in other words, a REFERENCE to a.
+
+
 
     Addresses will look like "0x7fffffffffde40"
         MAIN USE OF POINTERS : DYNAMIC MEMORY MANAGEMENT
@@ -260,10 +292,15 @@ REFERENCES https://learn.microsoft.com/en-us/cpp/cpp/references-cpp?view=msvc-17
     Both Refs and Pointers store memory addresses.
     However, references act as the value contained at the address. Pointers act as addresses, which can be modified by anything that deals with addresses (iterator stuff, incrementing, decrementing)
 
-    Initialization BINDS the address of an object to a reference. 2 types:   
-        & lvalue - Locator Value, aka "expression refering to a memory location". Read&Write Alias : named references a Named variable
-        && rvalue - Read-only Values. Used to extend lifetime of temporary objects or values without a specific memory address (temp or movable values)
-                Temp objects: used to calculate and return data, then destroyed. (&&: rvalue or universal ref based on context. Universal ref = lvalue)
+    Initialization BINDS the address of an object to a reference. 2 types with subtypes:   
+    https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2010/n3055.pdf 
+        & lvalue - Locator Value, aka "expression refering to a named memory location". Read&Write Alias : named references a Named variable. Another name: "Left value" (can be on the left side of an Assignment operator, bc memory location). 
+        Can implicitly be converted to an rvalue.
+        
+        && rvalue - Read-only Values. These values will be wiped after expression ends : they are guaranteed not to change the state of the program if modified. Used to extend lifetime of temporary objects or values without a specific memory address (temp or movable values).
+        Can NOT be implicitly converted to an lvalue.
+
+                Temp objects: used to calculate and return data, then destroyed. (&&: rvalue or universal ref based on context. Universal ref = lvalue
                 Can be used to init lvalues
             Subcategories: 
                     Prvalues (Pure rvalues)
@@ -300,6 +337,11 @@ REFERENCES https://learn.microsoft.com/en-us/cpp/cpp/references-cpp?view=msvc-17
         Avoiding COPIES. Function parameters are typically (read: by default) copied. If large object, you do not want to unnecessarily copy it. 
         Optimizing ForLoops by avoiding copies each iteration.
             A form of for loop uses variable to iterate through a container. This variable MAY require copy each iteration.
+
+    FORWARDING REFERENCES
+    https://en.cppreference.com/w/cpp/language/reference#Forwarding_references
+    Forwarding references are a special kind of references that preserve the value category of a function argument, making it possible to forward it by means of std::forward.
+
 
 VECTORS - STD (STL: standard template library, <vector>) (alternative for ARRAYS)
     Dynamic Size
@@ -368,6 +410,7 @@ DECAY
     
     QUALIFIERS
     - const and volatile are removed
+    AKA "make it cv-unqualified"
 
     REFERENCES
     -Converted to the type they refer to (instead of being "reference type")
@@ -510,7 +553,11 @@ CONSTANTS
             Embedded Systems & Multithreaded programs
             Variables: when working with hardware registers or memory-mapped I/O: 
                 EX: volatile int enemyStatus;
-                We do not want accesses (DEFINE THIS) to be optimized as that could prevent read/writes from happening.  
+                We do not want accesses (DEFINE THIS) to be optimized as that could prevent read/writes from happening. 
+        
+        !! cv-qualified : https://en.cppreference.com/w/cpp/language/cv 
+        A type that has been modified by const, volatile, or both.        
+
         mutable 
             Forces MEMBER of a class (even a Const object) to be mutable (changeable).
                 USE CASES:
@@ -588,6 +635,8 @@ https://en.cppreference.com/w/cpp/language/operators
                 items->push_back(item);
                 return *this
         Can return *this when dealing with modified objects' references.
+
+    
 ASSIGNMENTS
 Line of code that assigns value to a variable.
 Left hand must be able to hold a value, right-hand side is an expression.
